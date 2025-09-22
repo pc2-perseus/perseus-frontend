@@ -1,0 +1,16 @@
+export type DataDeletionKey =
+    | "abbreviation"
+    | "title"
+    | "description"
+    | "project_type"
+    | "call"
+    | "source"
+    | "source_raw"
+    | "affiliation"
+    | "principal_investigator"
+    | "person_of_contact"
+    | "employees"
+    | "scientific_fields"
+    | "start"
+    | "end"
+    | "custom_fields";

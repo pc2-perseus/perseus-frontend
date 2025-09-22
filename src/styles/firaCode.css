@@ -1,0 +1,8 @@
+@font-face {
+  font-family: FiraCode;
+  src: url(fonts/FiraCode-VariableFont_wght.ttf);
+}
+
+.firaCode {
+    font-family: FiraCode, serif;
+}
