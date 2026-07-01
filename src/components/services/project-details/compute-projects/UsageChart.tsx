@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 
 // Custom imports
-import ResourceUsage from "../../../interfaces/ResourceUsage.ts";
-import getUsageSeries from "../../../api/project-details/getUsageSeries.ts";
-import Resource from "../../../interfaces/Resource.ts";
+import ResourceUsage from "../../../../interfaces/ResourceUsage.ts";
+import getUsageSeries from "../../../../api/project-details/getUsageSeries.ts";
+import Resource from "../../../../interfaces/Resource.ts";
 
 import {
     LineChart,
@@ -24,9 +24,9 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
-import formatNumber from "../../../utils/formatNumber.ts";
-import Cluster from "../../../interfaces/Cluster.ts";
-import usedContingent from "../../../utils/usedContingent.ts";
+import formatNumber from "../../../../utils/formatNumber.ts";
+import Cluster from "../../../../interfaces/Cluster.ts";
+import usedContingent from "../../../../utils/usedContingent.ts";
 
 export default function UsageChart({
     projectId,

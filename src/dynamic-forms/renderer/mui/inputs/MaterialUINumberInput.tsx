@@ -1,11 +1,7 @@
-// React imports
-import React, { ChangeEvent } from "react";
-
-// MUI imports
-import { TextField } from "@mui/material";
-
 // Custom imports
 import NumberInput from "../../../interfaces/inputs/NumberInput";
+import DecimalTextField from "../../../../components/DecimalTextField.tsx";
+import { decimalInputToNumber } from "../../../../utils/decimalUnits.ts";
 
 export default function MaterialUINumberInput({
     config,
@@ -16,12 +12,8 @@ export default function MaterialUINumberInput({
     error: null | string;
     onChange: (id: string, value: unknown) => void;
 }) {
-    const [decimalHelperOn, setDecimalHelperOn] =
-        React.useState<boolean>(false);
-
     return (
-        <TextField
-            type="text"
+        <DecimalTextField
             fullWidth
             label={config.label}
             helperText={
@@ -37,25 +29,13 @@ export default function MaterialUINumberInput({
                     {config.helperText}
                 </>
             }
-            value={
-                config.value === undefined
-                    ? null
-                    : config.value.toString() + (decimalHelperOn ? "." : "")
-            }
+            value={String(config.value ?? "")}
             required={config.required}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                setDecimalHelperOn(
-                    event.target.value.slice(-1) === "." ||
-                        event.target.value.slice(-1) === ","
-                );
+            onValueChange={(value: string) => {
                 onChange(
                     config.id,
-                    Number(event.currentTarget.value.replace(",", "."))
+                    value === "" ? "" : decimalInputToNumber(value)
                 );
-            }}
-            inputProps={{
-                inputMode: "decimal",
-                pattern: "[0-9]*[.,]?[0-9]*",
             }}
             error={error !== null}
         />

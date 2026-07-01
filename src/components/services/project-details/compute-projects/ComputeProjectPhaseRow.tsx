@@ -21,16 +21,16 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 // Custom imports
-import ResourceValue from "../../../interfaces/ResourceValue.ts";
-import LimitValue from "../../../interfaces/LimitValue.ts";
-import Cluster from "../../../interfaces/Cluster.ts";
-import Resource from "../../../interfaces/Resource.ts";
-import Limit from "../../../interfaces/Limit.ts";
+import ResourceValue from "../../../../interfaces/ResourceValue.ts";
+import LimitValue from "../../../../interfaces/LimitValue.ts";
+import Cluster from "../../../../interfaces/Cluster.ts";
+import Resource from "../../../../interfaces/Resource.ts";
+import Limit from "../../../../interfaces/Limit.ts";
 import ComputeProjectResourceRow from "./ComputeProjectResourceRow.tsx";
 import ComputeProjectLimitRow from "./ComputeProjectLimitRow.tsx";
-import ResourceValueOverwrite from "../../../interfaces/ResourceValueOverwrite.ts";
-import LimitValueOverwrite from "../../../interfaces/LimitValueOverwrite.ts";
-import ResourcePriority from "../../../interfaces/ResourcePriority.ts";
+import ResourceValueOverwrite from "../../../../interfaces/ResourceValueOverwrite.ts";
+import LimitValueOverwrite from "../../../../interfaces/LimitValueOverwrite.ts";
+import ResourcePriority from "../../../../interfaces/ResourcePriority.ts";
 
 export default function ComputeProjectPhaseRow({
     phase,
@@ -201,7 +201,13 @@ export default function ComputeProjectPhaseRow({
 
     return (
         <>
-            <TableRow sx={{ backgroundColor: theme.palette.action.hover }}>
+            <TableRow
+                sx={{
+                    backgroundColor: theme.palette.action.hover,
+                    cursor: "pointer",
+                }}
+                onClick={() => setShowPhase(!showPhase)}
+            >
                 <TableCell
                     sx={{
                         borderBottom: "none",

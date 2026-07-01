@@ -10,9 +10,14 @@ import {
     Typography,
     useTheme,
 } from "@mui/material";
-import ResourceValue from "../../../interfaces/ResourceValue.ts";
-import LimitValue from "../../../interfaces/LimitValue.ts";
-import Limit from "../../../interfaces/Limit.ts";
+import ResourceValue from "../../../../interfaces/ResourceValue.ts";
+import LimitValue from "../../../../interfaces/LimitValue.ts";
+import Limit from "../../../../interfaces/Limit.ts";
+import DecimalTextField from "../../../DecimalTextField.tsx";
+import {
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../../utils/decimalUnits.ts";
 
 export default function EditComputeProjectLimits({
     computeProjectId,
@@ -310,14 +315,16 @@ export default function EditComputeProjectLimits({
                                                 />
                                             </Grid>
                                             <Grid size={{ xs: 12, md: 6 }}>
-                                                <TextField
-                                                    value={
-                                                        currentValue /
-                                                        (limit === undefined
+                                                <DecimalTextField
+                                                    value={scaledValueToDecimalString(
+                                                        currentValue,
+                                                        limit === undefined
                                                             ? 1
-                                                            : limit.display_unit_factor)
-                                                    }
-                                                    onChange={(e) => {
+                                                            : limit.display_unit_factor
+                                                    )}
+                                                    onValueChange={(
+                                                        newValue: string
+                                                    ) => {
                                                         changeValue(
                                                             phase,
                                                             limitValue.limit_id,
@@ -325,17 +332,15 @@ export default function EditComputeProjectLimits({
                                                                 computeProjectId
                                                                 ? limitValue.value
                                                                 : 0,
-                                                            Number(
-                                                                e.currentTarget
-                                                                    .value
-                                                            ) *
-                                                                (limit ===
-                                                                undefined
+                                                            scaledDecimalInputToNumber(
+                                                                newValue,
+                                                                limit ===
+                                                                    undefined
                                                                     ? 1
-                                                                    : limit.display_unit_factor)
+                                                                    : limit.display_unit_factor
+                                                            )
                                                         );
                                                     }}
-                                                    type="number"
                                                     size="small"
                                                     label="Assigned value"
                                                     error={
@@ -370,12 +375,14 @@ export default function EditComputeProjectLimits({
                                                     focused={
                                                         stateValue !== undefined
                                                     }
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <InputAdornment position="end">
-                                                                {limitUnit}
-                                                            </InputAdornment>
-                                                        ),
+                                                    slotProps={{
+                                                        input: {
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    {limitUnit}
+                                                                </InputAdornment>
+                                                            ),
+                                                        },
                                                     }}
                                                     fullWidth
                                                 />

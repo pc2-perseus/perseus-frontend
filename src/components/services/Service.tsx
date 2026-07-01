@@ -23,6 +23,8 @@ import EmailTemplateManager from "./email-template-manager/EmailTemplateManager.
 import PriorityManager from "./PriorityManager.tsx";
 import StateMachineManager from "./state-machine-manager/StateMachineManager.tsx";
 import FrontendConfigurationManager from "./FrontendConfigurationManager.tsx";
+import AndromedaManager from "./andromeda/AndromedaManager.tsx";
+import SystemStatusManager from "./SystemStatusManager.tsx";
 
 export default function Service({
     serviceId,
@@ -78,6 +80,10 @@ export default function Service({
             return <StateMachineManager />;
         case "FrontendConfigurationManager":
             return <FrontendConfigurationManager />;
+        case "Andromeda":
+            return <AndromedaManager />;
+        case "SystemStatus":
+            return <SystemStatusManager />;
         default:
             return <>{serviceId}</>;
     }

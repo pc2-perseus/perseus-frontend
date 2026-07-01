@@ -8,7 +8,10 @@ const abortControllers: Map<string, AbortController> = new Map<
     AbortController
 >();
 
-const relevantEndpoints: string[] = ["/service/ProjectSearch/search"];
+const relevantEndpoints: string[] = [
+    "/service/ProjectSearch/search",
+    "/service/PersonSearch/search",
+];
 
 /**
  * Makes an API call.

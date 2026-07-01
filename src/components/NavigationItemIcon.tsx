@@ -1,18 +1,6 @@
-/**import * as Icons from "@mui/icons-material";
-
-export default function MuiIcon({ icon }: { icon: string }) {
-    const IconComponent = Icons[icon];
-
-    if (!IconComponent) {
-        console.warn(`Icon "${icon}" existiert nicht in @mui/icons-material`);
-        return null;
-    }
-
-    return <IconComponent />;
-}**/
-
 import React from "react";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import SvgIcon from "@mui/material/SvgIcon";
 
 const iconMap: Record<string, () => Promise<{ default: React.ComponentType }>> =
     {
@@ -2474,22 +2462,98 @@ export default function NavigationItemIcon({ icon }: { icon: string | null }) {
             icon !== null && icon in loadedIcons ? loadedIcons[icon] : null
         );
 
+    React.useEffect(() => {
+        if (icon === null || icon === "Andromeda") {
+            return;
+        }
+
+        if (icon in loadedIcons) {
+            setIconComponent(() => loadedIcons[icon]);
+            return;
+        }
+
+        const loader = iconMap[icon];
+        if (!loader) {
+            setIconComponent(null);
+            return;
+        }
+
+        let isMounted = true;
+        loader().then((mod) => {
+            loadedIcons[icon] = mod.default;
+            if (isMounted) {
+                setIconComponent(() => mod.default);
+            }
+        });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [icon]);
+
     if (icon === null) {
         return <CheckBoxOutlineBlankIcon />;
     }
 
+    if (icon === "Andromeda") {
+        return (
+            <SvgIcon viewBox="0 0 1024 1024">
+                <g transform="translate(512 512) skewX(45) translate(-512 -512)">
+                    <ellipse
+                        cx="512"
+                        cy="512"
+                        rx="75"
+                        ry="50"
+                        fill="currentColor"
+                    />
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={40}
+                        d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+                    />
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={40}
+                        d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+                        transform="rotate(60, 512, 512)"
+                    />
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={40}
+                        d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+                        transform="rotate(120, 512, 512)"
+                    />
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={40}
+                        d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+                        transform="rotate(180, 512, 512)"
+                    />
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={40}
+                        d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+                        transform="rotate(240, 512, 512)"
+                    />
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={40}
+                        d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+                        transform="rotate(300, 512, 512)"
+                    />
+                </g>
+            </SvgIcon>
+        );
+    }
+
     if (!IconComponent) {
-        const loader = iconMap[icon];
-        if (!loader) {
-            return <CheckBoxOutlineBlankIcon />;
-        }
-
-        loader().then((mod) => {
-            loadedIcons[icon] = mod.default;
-            setIconComponent(mod.default);
-        });
-
-        return null;
+        return <CheckBoxOutlineBlankIcon />;
     }
 
     return <IconComponent />;

@@ -27,6 +27,9 @@ import getMenuItems from "./api/getMenuItems.ts";
 import { BrowserRouter } from "react-router-dom";
 import PageRouter from "./PageRouter.tsx";
 import isDarkModeActive, { setDarkMode } from "./utils/isDarkModeActive.ts";
+import isDrawerCollapsed, {
+    setDrawerCollapsed,
+} from "./utils/isDrawerCollapsed.ts";
 import { usePeriodicHook } from "./utils/usePeriodicHook.ts";
 import postLogout from "./api/postLogout.ts";
 import LoadingBar from "./components/LoadingBar.tsx";
@@ -41,6 +44,8 @@ export default function App() {
     const [isDarkMode, updateDarkMode] = React.useState<boolean>(
         isDarkModeActive() !== false
     );
+    const [isDrawerCollapsedState, updateDrawerCollapsedState] =
+        React.useState<boolean>(isDrawerCollapsed());
 
     // Activate dark mode if explicitly set (1) or if set to "system" (2) and system prefers dark
     const theme = React.useMemo(
@@ -92,6 +97,11 @@ export default function App() {
     function updateDarkModeNavbar(active: boolean): void {
         updateDarkMode(active);
         setDarkMode(active);
+    }
+
+    function updateDrawerCollapsed(collapsed: boolean): void {
+        updateDrawerCollapsedState(collapsed);
+        setDrawerCollapsed(collapsed);
     }
 
     function logout() {
@@ -167,6 +177,10 @@ export default function App() {
                             <Navbar
                                 isDarkMode={isDarkMode}
                                 updateDarkMode={updateDarkModeNavbar}
+                                isDrawerCollapsed={isDrawerCollapsedState}
+                                updateDrawerCollapsed={
+                                    updateDrawerCollapsed
+                                }
                             />
 
                             {authContextData === null && isLoading !== null ? (
@@ -212,16 +226,19 @@ export default function App() {
                             )}
                             {authContextData !== null && isLoading === false ? (
                                 <Box sx={{ display: "flex" }}>
-                                    <DrawerNavigation items={navigationItems} />
+                                    <DrawerNavigation
+                                        items={navigationItems}
+                                        isCollapsed={isDrawerCollapsedState}
+                                    />
                                     <Box
                                         component="main"
                                         sx={{
                                             flexGrow: 1,
+                                            minWidth: 0,
                                             pl: 3,
                                             pr: 2,
                                             pt: "64px",
                                             pb: 2,
-                                            width: { sm: `calc(100% - 300px)` },
                                             overflowX: "hidden",
                                         }}
                                         id="main"

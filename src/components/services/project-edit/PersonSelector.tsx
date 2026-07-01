@@ -16,26 +16,35 @@ export default function PersonSelector({
     options: Person[];
     onChange: (value: Person | null) => void;
 }): React.ReactElement {
-    const [currentValue, setCurrentValue] = React.useState<
-        Person | null | undefined
-    >(options.find((p: Person) => p._id === personId));
+    const [currentValue, setCurrentValue] = React.useState<Person | null>(
+        options.find((p: Person) => p._id === personId) ?? null
+    );
+
+    React.useEffect(() => {
+        setCurrentValue(
+            options.find((p: Person) => p._id === personId) ?? null
+        );
+    }, [personId, options]);
 
     return (
         <Autocomplete
-            renderInput={(params) => <TextField {...params} label={label} />}
-            value={currentValue === undefined ? null : currentValue}
             options={options}
+            value={currentValue}
             getOptionLabel={(p: Person) =>
-                (p.title === null ? "" : p.title + " ") +
-                p.firstname +
-                " " +
-                p.lastname
+                (p.title ? `${p.title} ` : "") + `${p.firstname} ${p.lastname}`
             }
-            isOptionEqualToValue={(p1: Person, p2: Person) => p1._id === p2._id}
-            onChange={(_, value: Person | null) => {
+            renderOption={(props, option) => (
+                <li {...props} key={option._id}>
+                    {(option.title ? `${option.title} ` : "") +
+                        `${option.firstname} ${option.lastname}`}
+                </li>
+            )}
+            isOptionEqualToValue={(p1, p2) => p1._id === p2._id}
+            onChange={(_, value) => {
                 setCurrentValue(value);
                 onChange(value);
             }}
+            renderInput={(params) => <TextField {...params} label={label} />}
             fullWidth
         />
     );

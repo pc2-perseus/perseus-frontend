@@ -7,7 +7,6 @@ import {
     InputAdornment,
     TableCell,
     TableRow,
-    TextField,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
@@ -21,6 +20,12 @@ import limitMatch from "../../../utils/limitMatch.ts";
 
 // Other imports
 import dayjs, { Dayjs } from "dayjs";
+import DecimalTextField from "../../DecimalTextField.tsx";
+import {
+    decimalInputToNumber,
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../utils/decimalUnits.ts";
 
 export default function LimitCardRow({
     value,
@@ -73,15 +78,15 @@ export default function LimitCardRow({
                 />
             </TableCell>
             <TableCell>
-                <TextField
+                <DecimalTextField
                     label=""
                     value={
                         limit !== undefined
-                            ? Math.round(
-                                  (value.value / limit.display_unit_factor) *
-                                      1000
-                              ) / 1000
-                            : value.value
+                            ? scaledValueToDecimalString(
+                                  value.value,
+                                  limit.display_unit_factor
+                              )
+                            : value.value.toString()
                     }
                     size="small"
                     slotProps={{
@@ -93,12 +98,14 @@ export default function LimitCardRow({
                             ),
                         },
                     }}
-                    onChange={(e) => {
+                    onValueChange={(newValue: string) => {
                         value.value =
-                            Number(e.currentTarget.value) *
-                            (limit === undefined
-                                ? 1
-                                : limit.display_unit_factor);
+                            limit === undefined
+                                ? decimalInputToNumber(newValue)
+                                : scaledDecimalInputToNumber(
+                                      newValue,
+                                      limit.display_unit_factor
+                                  );
                         onChange(value, index);
                     }}
                     fullWidth

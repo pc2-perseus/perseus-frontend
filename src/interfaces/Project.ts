@@ -1,6 +1,5 @@
 import DatabaseItem from "./DatabaseItem.ts";
 import Source from "./Source.ts";
-import Person from "./Person.ts";
 import ScientificField from "./ScientificField.ts";
 import ResourceValue from "./ResourceValue.ts";
 import LimitValue from "./LimitValue.ts";
@@ -19,7 +18,7 @@ export default interface Project extends DatabaseItem {
     affiliation_id: string | null;
     principal_investigator_id: string | null;
     person_of_contact_id: string | null;
-    member_ids: Person[];
+    member_ids: string[];
     scientific_fields: ScientificField[];
     start: string | null;
     end: string | null;

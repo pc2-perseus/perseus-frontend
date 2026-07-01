@@ -68,7 +68,7 @@ import postProjectFile from "../../../api/postProjectFile.ts";
 import PageBackdrop from "../../PageBackdrop.tsx";
 import ResourceValue from "../../../interfaces/ResourceValue.ts";
 import LimitValue from "../../../interfaces/LimitValue.ts";
-import ComputeProjectList from "./ComputeProjectList.tsx";
+import ComputeProjectList from "./compute-projects/ComputeProjectList.tsx";
 import ComputeProject from "../../../interfaces/ComputeProject.ts";
 import Cluster from "../../../interfaces/Cluster.ts";
 import Limit from "../../../interfaces/Limit.ts";
@@ -107,6 +107,7 @@ import ResourcePriority from "../../../interfaces/ResourcePriority.ts";
 import getPriorities from "../../../api/resource-priorities/getPriorities.ts";
 import ConfigContext from "../../../contexts/ConfigContext.ts";
 import FrontendConfiguration from "../../../interfaces/FrontendConfiguration.ts";
+import AuthContext, { AuthContextData } from "../../../contexts/AuthContext.ts";
 
 export default function ProjectDetails({
     projectId,
@@ -344,6 +345,65 @@ export default function ProjectDetails({
 
     const theme: Theme = useTheme();
     const navigate = useNavigate();
+    const authContextData: AuthContextData | null =
+        React.useContext(AuthContext);
+
+    const escapeHtml = (value: string): string => _.escape(value);
+
+    const stripTrailingUrlPunctuation = (
+        value: string
+    ): { url: string; trailing: string } => {
+        const match = value.match(/[),.!?:;]+$/);
+
+        if (match === null) {
+            return { url: value, trailing: "" };
+        }
+
+        return {
+            url: value.slice(0, -match[0].length),
+            trailing: match[0],
+        };
+    };
+
+    const hasRichNoteText = (note: string | null): boolean => {
+        if (note === null) return false;
+
+        const mentionRegex = /@(\w+)/g;
+        const urlRegex = /\b(?:https?:\/\/|www\.)[^\s<]+/g;
+        return mentionRegex.test(note) || urlRegex.test(note);
+    };
+
+    const formatRichNoteText = (note: string | null): string => {
+        if (note === null) return "";
+
+        const richTextRegex = /@(\w+)|\b(?:https?:\/\/|www\.)[^\s<]+/g;
+        let formattedNote = "";
+        let lastIndex = 0;
+
+        for (const match of note.matchAll(richTextRegex)) {
+            const matchedText = match[0];
+            const matchIndex = match.index ?? 0;
+            const username = match[1];
+
+            formattedNote += escapeHtml(note.slice(lastIndex, matchIndex));
+
+            if (username === undefined) {
+                const { url, trailing } =
+                    stripTrailingUrlPunctuation(matchedText);
+                const href = url.startsWith("www.") ? `https://${url}` : url;
+
+                formattedNote += `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>${escapeHtml(trailing)}`;
+            } else if (username === authContextData?.username) {
+                formattedNote += `<em><strong>@${escapeHtml(username)}</strong></em>`;
+            } else {
+                formattedNote += `<em>@${escapeHtml(username)}</em>`;
+            }
+
+            lastIndex = matchIndex + matchedText.length;
+        }
+
+        return `${formattedNote}${escapeHtml(note.slice(lastIndex))}`;
+    };
 
     function fetchAll() {
         setProject(null);
@@ -818,7 +878,19 @@ export default function ProjectDetails({
                                                     }}
                                                 >
                                                     <ExpandableText
-                                                        content={event.comment}
+                                                        content={
+                                                            event.state_id ===
+                                                            "NOTE"
+                                                                ? formatRichNoteText(
+                                                                      event.comment
+                                                                  )
+                                                                : event.comment
+                                                        }
+                                                        isHtml={
+                                                            hasRichNoteText(
+                                                                event.comment
+                                                            ) === true
+                                                        }
                                                     />
                                                 </TableCell>
                                                 <TableCell
@@ -882,7 +954,7 @@ export default function ProjectDetails({
             <Accordion slotProps={{ transition: { timeout: 100 } }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography component="span">
-                        View responsible persons
+                        View responsible users
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -1409,7 +1481,11 @@ export default function ProjectDetails({
                                         JSON.parse(JSON.stringify(newValues))
                                     );
                                 }}
-                                options={newFileTagsSuggestions}
+                                options={
+                                    Array.isArray(newFileTagsSuggestions)
+                                        ? newFileTagsSuggestions
+                                        : []
+                                }
                                 sx={{ mt: 2 }}
                             />
                         </DialogContent>

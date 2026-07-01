@@ -18,16 +18,16 @@ import {
 } from "@mui/material";
 
 // Custom imports
-import ComputeProject from "../../../interfaces/ComputeProject.ts";
-import ResourceValue from "../../../interfaces/ResourceValue.ts";
-import LimitValue from "../../../interfaces/LimitValue.ts";
+import ComputeProject from "../../../../interfaces/ComputeProject.ts";
+import ResourceValue from "../../../../interfaces/ResourceValue.ts";
+import LimitValue from "../../../../interfaces/LimitValue.ts";
 import EditComputeProjectResources from "./EditComputeProjectResources.tsx";
 
 // Other imports
 import _ from "lodash";
-import Resource from "../../../interfaces/Resource.ts";
-import Limit from "../../../interfaces/Limit.ts";
-import Cluster from "../../../interfaces/Cluster.ts";
+import Resource from "../../../../interfaces/Resource.ts";
+import Limit from "../../../../interfaces/Limit.ts";
+import Cluster from "../../../../interfaces/Cluster.ts";
 import EditComputeProjectLimits from "./EditComputeProjectLimits.tsx";
 
 export default function EditComputeProject({
@@ -73,6 +73,7 @@ export default function EditComputeProject({
             files: {},
             file_tags: {},
             compute_project_id: "",
+            member_ids: [],
             custom_fields: { "": "" },
         });
 

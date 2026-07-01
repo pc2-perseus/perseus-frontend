@@ -38,6 +38,12 @@ import limitMatch from "../../../utils/limitMatch.ts";
 
 // Other imports
 import dayjs, { Dayjs } from "dayjs";
+import DecimalTextField from "../../DecimalTextField.tsx";
+import {
+    decimalInputToNumber,
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../utils/decimalUnits.ts";
 
 export default function LimitCard({
     title,
@@ -72,9 +78,6 @@ export default function LimitCard({
     });
     const [newLimitSelection, setNewLimitSelection] =
         React.useState<Limit | null>(null);
-    const [decimalHelperOn, setDecimalHelperOn] =
-        React.useState<boolean>(false);
-
     function updateLimitValue(value: LimitValue, index: number) {
         currentValues[index] = value;
         setCurrentValues(
@@ -224,7 +227,7 @@ export default function LimitCard({
                             }}
                         />
                         <DateTimePicker
-                            label="Start (UTC)"
+                            label="End (UTC)"
                             value={dayjs(newLimitValue.end)}
                             timezone="UTC"
                             slotProps={{
@@ -243,17 +246,15 @@ export default function LimitCard({
                                 }
                             }}
                         />
-                        <TextField
+                        <DecimalTextField
                             label="Value"
                             value={
-                                (newLimitSelection !== null
-                                    ? Math.round(
-                                          (newLimitValue.value /
-                                              newLimitSelection.display_unit_factor) *
-                                              1000
-                                      ) / 1000
-                                    : newLimitValue.value
-                                ).toString() + (decimalHelperOn ? "." : "")
+                                newLimitSelection !== null
+                                    ? scaledValueToDecimalString(
+                                          newLimitValue.value,
+                                          newLimitSelection.display_unit_factor
+                                      )
+                                    : newLimitValue.value.toString()
                             }
                             slotProps={{
                                 input: {
@@ -264,21 +265,14 @@ export default function LimitCard({
                                     ),
                                 },
                             }}
-                            onChange={(e) => {
+                            onValueChange={(newValue: string) => {
                                 newLimitValue.value =
-                                    Number(
-                                        e.currentTarget.value.replaceAll(
-                                            ",",
-                                            "."
-                                        )
-                                    ) *
-                                    (newLimitSelection === null
-                                        ? 1
-                                        : newLimitSelection.display_unit_factor);
-                                setDecimalHelperOn(
-                                    e.currentTarget.value.slice(-1) === "." ||
-                                        e.currentTarget.value.slice(-1) === ","
-                                );
+                                    newLimitSelection === null
+                                        ? decimalInputToNumber(newValue)
+                                        : scaledDecimalInputToNumber(
+                                              newValue,
+                                              newLimitSelection.display_unit_factor
+                                          );
                                 setNewLimitValue(
                                     JSON.parse(JSON.stringify(newLimitValue))
                                 );

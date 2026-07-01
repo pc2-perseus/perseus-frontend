@@ -41,6 +41,12 @@ import resourceMatch from "../../../utils/resourceMatch.ts";
 // Other imports
 import dayjs, { Dayjs } from "dayjs";
 import ResourcePriority from "../../../interfaces/ResourcePriority.ts";
+import DecimalTextField from "../../DecimalTextField.tsx";
+import {
+    decimalInputToNumber,
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../utils/decimalUnits.ts";
 
 export default function ResourceCard({
     title,
@@ -83,9 +89,6 @@ export default function ResourceCard({
         });
     const [newResourceSelection, setNewResourceSelection] =
         React.useState<Resource | null>(null);
-    const [decimalHelperOn, setDecimalHelperOn] =
-        React.useState<boolean>(false);
-
     function updateResourceValue(value: ResourceValue, index: number) {
         currentValues[index] = value;
         setCurrentValues(
@@ -263,7 +266,7 @@ export default function ResourceCard({
                             }}
                         />
                         <DateTimePicker
-                            label="Start (UTC)"
+                            label="End (UTC)"
                             value={dayjs(newResourceValue.end)}
                             timezone="UTC"
                             slotProps={{
@@ -301,17 +304,15 @@ export default function ResourceCard({
                             freeSolo
                             fullWidth
                         />
-                        <TextField
+                        <DecimalTextField
                             label="Value"
                             value={
-                                (newResourceSelection !== null
-                                    ? Math.round(
-                                          (newResourceValue.value /
-                                              newResourceSelection.display_unit_factor) *
-                                              1000
-                                      ) / 1000
-                                    : newResourceValue.value
-                                ).toString() + (decimalHelperOn ? "." : "")
+                                newResourceSelection !== null
+                                    ? scaledValueToDecimalString(
+                                          newResourceValue.value,
+                                          newResourceSelection.display_unit_factor
+                                      )
+                                    : newResourceValue.value.toString()
                             }
                             slotProps={{
                                 input: {
@@ -322,21 +323,14 @@ export default function ResourceCard({
                                     ),
                                 },
                             }}
-                            onChange={(e) => {
+                            onValueChange={(newValue: string) => {
                                 newResourceValue.value =
-                                    Number(
-                                        e.currentTarget.value.replaceAll(
-                                            ",",
-                                            "."
-                                        )
-                                    ) *
-                                    (newResourceSelection === null
-                                        ? 1
-                                        : newResourceSelection.display_unit_factor);
-                                setDecimalHelperOn(
-                                    e.currentTarget.value.slice(-1) === "." ||
-                                        e.currentTarget.value.slice(-1) === ","
-                                );
+                                    newResourceSelection === null
+                                        ? decimalInputToNumber(newValue)
+                                        : scaledDecimalInputToNumber(
+                                              newValue,
+                                              newResourceSelection.display_unit_factor
+                                          );
                                 setNewResourceValue(
                                     JSON.parse(JSON.stringify(newResourceValue))
                                 );

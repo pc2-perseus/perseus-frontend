@@ -1,0 +1,34 @@
+<svg
+    version="1.0"
+    xmlns="http://www.w3.org/2000/svg"
+    width="1024" height="1024" viewBox="0 0 1024 1024"
+    preserveAspectRatio="xMidYMid meet"
+>
+    <g transform="translate(512 512) skewX(45) translate(-512 -512)">
+        <ellipse cx="512" cy="512" rx="75" ry="50" fill="#4d998b" />
+        <path fill="none" stroke="#4d998b" stroke-width="40"
+            d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+        />
+        <path fill="none" stroke="#4d998b" stroke-width="40"
+            d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+            transform="rotate(60, 512, 512)"
+        />
+        <path fill="none" stroke="#4d998b" stroke-width="40"
+            d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+            transform="rotate(120, 512, 512)"
+        />
+        <path fill="none" stroke="#4d998b" stroke-width="40"
+            d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+            transform="rotate(180, 512, 512)"
+        />
+        <path fill="none" stroke="#4d998b" stroke-width="40"
+            d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+            transform="rotate(240, 512, 512)"
+        />
+        <path fill="none" stroke="#4d998b" stroke-width="40"
+            d="M512,512 C580,480 700,400 800,512 C900,624 850,800 700,900"
+            transform="rotate(300, 512, 512)"
+        />
+    </g>
+</svg>
+

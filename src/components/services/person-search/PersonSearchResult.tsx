@@ -62,10 +62,10 @@ export default function PersonSearchResult({
                                 color="text.secondary"
                                 gutterBottom
                             >
-                                {person.title === null ? (
+                                {person.username === null ? (
                                     <>&nbsp;</>
                                 ) : (
-                                    person.title
+                                    person.username
                                 )}
                             </Typography>
                             <Typography variant="h5" component="div">

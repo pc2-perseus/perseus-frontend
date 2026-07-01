@@ -15,6 +15,7 @@ import {
     ListItemText,
     ListSubheader,
     Theme,
+    Tooltip,
     useTheme,
 } from "@mui/material";
 
@@ -39,22 +40,69 @@ export interface NavigationItem {
  */
 export default function DrawerNavigation({
     items,
+    isCollapsed,
 }: {
     items: NavigationItem[];
+    isCollapsed: boolean;
 }): React.ReactElement {
     const location = useLocation();
 
     const theme: Theme = useTheme();
-
-    let settingsIndex: number | null = null;
-    items.forEach((item, index) => {
-        if (item.id === "Settings") {
-            settingsIndex = index;
-        }
+    const expandedDrawerWidth = "270px";
+    const collapsedDrawerWidth = `${theme.spacing(8)}`;
+    const drawerTransition = theme.transitions.create("width", {
+        easing: isCollapsed
+            ? "cubic-bezier(0.4, 0, 0.2, 1)"
+            : "cubic-bezier(0.22, 1, 0.36, 1)",
+        duration: isCollapsed ? 180 : 260,
     });
-    if (settingsIndex !== null) {
-        items.push(items.splice(settingsIndex, 1)[0]);
-    }
+    const labelTransition = theme.transitions.create(
+        ["opacity", "max-width", "transform"],
+        {
+            easing: isCollapsed
+                ? "cubic-bezier(0.4, 0, 0.2, 1)"
+                : "cubic-bezier(0.22, 1, 0.36, 1)",
+            duration: isCollapsed ? 140 : 220,
+        }
+    );
+    const itemIconOffset = isCollapsed ? 0 : 3;
+    const labelSx = {
+        opacity: isCollapsed ? 0 : 1,
+        maxWidth: isCollapsed ? 0 : 240,
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        transform: isCollapsed ? "translateX(-8px)" : "translateX(0)",
+        transition: labelTransition,
+    };
+    const orderedItems = React.useMemo(() => {
+        const nextItems = [...items];
+        const settingsIndex = nextItems.findIndex(
+            (item) => item.id === "Settings"
+        );
+
+        if (settingsIndex >= 0) {
+            nextItems.push(nextItems.splice(settingsIndex, 1)[0]);
+        }
+
+        return nextItems;
+    }, [items]);
+    const generalItems = React.useMemo(
+        () =>
+            orderedItems.filter(
+                (i) =>
+                    !i.keyword?.startsWith("state") &&
+                    !i.keyword?.startsWith("service")
+            ),
+        [orderedItems]
+    );
+    const stateItems = React.useMemo(
+        () => orderedItems.filter((i) => i.keyword?.startsWith("state")),
+        [orderedItems]
+    );
+    const serviceItems = React.useMemo(
+        () => orderedItems.filter((i) => i.keyword?.startsWith("service")),
+        [orderedItems]
+    );
 
     React.useEffect(() => {
         if (
@@ -65,7 +113,7 @@ export default function DrawerNavigation({
             return;
         } else {
             let found: boolean = false;
-            items.forEach((item: NavigationItem) => {
+            orderedItems.forEach((item: NavigationItem) => {
                 if (!found && location.pathname.startsWith("/" + item.id)) {
                     found = true;
                     document.title = item.name + " - PERSEUS";
@@ -76,44 +124,105 @@ export default function DrawerNavigation({
             }
         }
         document.title = "PERSEUS";
-    }, [location]);
+    }, [location, orderedItems]);
+
+    const dashboardItemContent = (
+        <ListItemButton
+            component={NavLink}
+            to="/dashboard"
+            sx={{
+                minHeight: 48,
+                px: 2.5,
+                justifyContent: isCollapsed ? "center" : "initial",
+                backgroundColor:
+                    location.pathname.startsWith("/dashboard") ||
+                    location.pathname.trim() === "/"
+                        ? theme.palette.mode === "light"
+                            ? "primary.light"
+                            : "primary.dark"
+                        : undefined,
+                ":hover": {
+                    backgroundColor:
+                        theme.palette.mode === "light"
+                            ? "primary.light"
+                            : "primary.dark",
+                },
+            }}
+        >
+            <ListItemIcon
+                sx={{
+                    minWidth: 0,
+                    mr: itemIconOffset,
+                    justifyContent: "center",
+                    transition: theme.transitions.create("margin-right", {
+                        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+                        duration: 220,
+                    }),
+                }}
+            >
+                <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" sx={labelSx} />
+        </ListItemButton>
+    );
 
     function renderItem(item: NavigationItem) {
-        return (
-            <ListItem sx={{ ml: 0, mr: 0, px: 0, py: "1px" }} key={item.id}>
-                <ListItemButton
-                    component={NavLink}
-                    to={"/" + item.id}
-                    sx={{
-                        backgroundColor: location.pathname.startsWith(
-                            "/" + item.id
-                        )
-                            ? theme.palette.mode === "light"
+        const itemContent = (
+            <ListItemButton
+                component={NavLink}
+                to={"/" + item.id}
+                sx={{
+                    minHeight: 48,
+                    px: 2.5,
+                    justifyContent: isCollapsed ? "center" : "initial",
+                    backgroundColor: location.pathname.startsWith("/" + item.id)
+                        ? theme.palette.mode === "light"
+                            ? "primary.light"
+                            : "primary.dark"
+                        : undefined,
+                    ":hover": {
+                        backgroundColor:
+                            theme.palette.mode === "light"
                                 ? "primary.light"
-                                : "primary.dark"
-                            : undefined,
-                        ":hover": {
-                            backgroundColor:
-                                theme.palette.mode === "light"
-                                    ? "primary.light"
-                                    : "primary.dark",
-                        },
+                                : "primary.dark",
+                    },
+                }}
+            >
+                <ListItemIcon
+                    sx={{
+                        minWidth: 0,
+                        mr: itemIconOffset,
+                        justifyContent: "center",
+                        transition: theme.transitions.create("margin-right", {
+                            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+                            duration: 220,
+                        }),
                     }}
                 >
-                    <ListItemIcon>
-                        {item.notifications && item.notifications > 0 ? (
-                            <Badge
-                                badgeContent={item.notifications}
-                                color="primary"
-                            >
-                                <NavigationItemIcon icon={item.icon} />
-                            </Badge>
-                        ) : (
+                    {item.notifications && item.notifications > 0 ? (
+                        <Badge
+                            badgeContent={item.notifications}
+                            color="primary"
+                        >
                             <NavigationItemIcon icon={item.icon} />
-                        )}
-                    </ListItemIcon>
-                    <ListItemText primary={item.name} />
-                </ListItemButton>
+                        </Badge>
+                    ) : (
+                        <NavigationItemIcon icon={item.icon} />
+                    )}
+                </ListItemIcon>
+                <ListItemText primary={item.name} sx={labelSx} />
+            </ListItemButton>
+        );
+
+        return (
+            <ListItem sx={{ ml: 0, mr: 0, px: 0, py: "1px" }} key={item.id}>
+                {isCollapsed ? (
+                    <Tooltip title={item.name} placement="right">
+                        {itemContent}
+                    </Tooltip>
+                ) : (
+                    itemContent
+                )}
             </ListItem>
         );
     }
@@ -122,9 +231,14 @@ export default function DrawerNavigation({
         <Box
             component="nav"
             sx={{
-                width: 300,
+                width: {
+                    md: isCollapsed
+                        ? collapsedDrawerWidth
+                        : expandedDrawerWidth,
+                },
                 flexShrink: 0,
                 scrollbarWidth: "none",
+                transition: drawerTransition,
                 "& ::-webkit-scrollbar": {
                     display: "none",
                 },
@@ -139,7 +253,11 @@ export default function DrawerNavigation({
                     display: { xs: "none", md: "block" },
                     "& .MuiDrawer-paper": {
                         boxSizing: "border-box",
-                        width: 300,
+                        overflowX: "hidden",
+                        width: isCollapsed
+                            ? collapsedDrawerWidth
+                            : expandedDrawerWidth,
+                        transition: drawerTransition,
                     },
                 }}
             >
@@ -149,65 +267,45 @@ export default function DrawerNavigation({
                     }}
                 >
                     <ListItem sx={{ ml: 0, mr: 0, px: 0, pb: "2px", pt: 1 }}>
-                        <ListItemButton
-                            component={NavLink}
-                            to="/dashboard"
-                            sx={{
-                                backgroundColor:
-                                    location.pathname.startsWith(
-                                        "/dashboard"
-                                    ) || location.pathname.trim() === "/"
-                                        ? theme.palette.mode === "light"
-                                            ? "primary.light"
-                                            : "primary.dark"
-                                        : undefined,
-                                ":hover": {
-                                    backgroundColor:
-                                        theme.palette.mode === "light"
-                                            ? "primary.light"
-                                            : "primary.dark",
-                                },
-                            }}
-                        >
-                            <ListItemIcon>
-                                <DashboardIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Dashboard" />
-                        </ListItemButton>
+                        {isCollapsed ? (
+                            <Tooltip title="Dashboard" placement="right">
+                                {dashboardItemContent}
+                            </Tooltip>
+                        ) : (
+                            dashboardItemContent
+                        )}
                     </ListItem>
-                    {items
-                        .filter(
-                            (i) =>
-                                !i.keyword?.startsWith("state") &&
-                                !i.keyword?.startsWith("service")
-                        )
-                        .map(renderItem)}
-                    {items.filter((i) => i.keyword?.startsWith("state"))
-                        .length == 0 ? (
+                    {generalItems.map(renderItem)}
+                    {stateItems.length == 0 ? (
                         ""
+                    ) : isCollapsed ? (
+                        stateItems.map(renderItem)
                     ) : (
                         <>
-                            <Divider />
                             <ListSubheader sx={{ lineHeight: "24px", pt: 1 }}>
                                 States
                             </ListSubheader>
-                            {items
-                                .filter((i) => i.keyword?.startsWith("state"))
-                                .map(renderItem)}
+                            {stateItems.map(renderItem)}
                         </>
                     )}
-                    {items.filter((i) => i.keyword?.startsWith("service"))
-                        .length == 0 ? (
+                    {serviceItems.length == 0 ? (
                         ""
+                    ) : isCollapsed ? (
+                        [
+                            stateItems.length > 0 ? (
+                                <Divider key="collapsed-services-divider" />
+                            ) : (
+                                ""
+                            ),
+                            ...serviceItems.map(renderItem),
+                        ]
                     ) : (
                         <>
-                            <Divider />
+                            {stateItems.length > 0 ? <Divider /> : ""}
                             <ListSubheader sx={{ lineHeight: "24px", pt: 1 }}>
                                 Services
                             </ListSubheader>
-                            {items
-                                .filter((i) => i.keyword?.startsWith("service"))
-                                .map(renderItem)}
+                            {serviceItems.map(renderItem)}
                         </>
                     )}
                 </List>

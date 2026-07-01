@@ -23,6 +23,8 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LogoutIcon from "@mui/icons-material/Logout";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
+import MenuIcon from "@mui/icons-material/Menu";
+import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 
 // Custom imports
 import customClasses from "../styles/custom.module.css";
@@ -41,9 +43,13 @@ import postLogout from "../api/postLogout.ts";
 export default function Navbar({
     isDarkMode,
     updateDarkMode,
+    isDrawerCollapsed,
+    updateDrawerCollapsed,
 }: {
     isDarkMode: boolean;
     updateDarkMode: (isDarkMode: boolean) => void;
+    isDrawerCollapsed: boolean;
+    updateDrawerCollapsed: (isDrawerCollapsed: boolean) => void;
 }): React.ReactElement {
     const [version, updateVersion] = React.useState<null | string>("");
 
@@ -82,6 +88,27 @@ export default function Navbar({
             >
                 <AppBar position="fixed" enableColorOnDark>
                     <Toolbar>
+                        {authContextData !== null ? (
+                            <IconButton
+                                sx={{
+                                    color: "#fff",
+                                    ml: { md: "-12px" },
+                                    mr: 1,
+                                    display: { xs: "none", md: "inline-flex" },
+                                }}
+                                onClick={() =>
+                                    updateDrawerCollapsed(!isDrawerCollapsed)
+                                }
+                            >
+                                {isDrawerCollapsed ? (
+                                    <MenuIcon />
+                                ) : (
+                                    <MenuOpenIcon />
+                                )}
+                            </IconButton>
+                        ) : (
+                            ""
+                        )}
                         <Typography
                             component="div"
                             className={customClasses.firaCode}

@@ -158,6 +158,16 @@ export default function PersonEdit({
         const changes: {
             [key: string]: string | number | object;
         } = {};
+
+        // Always include required backend fields
+        const firstnameField = fields?.find((f) => f.id === "firstname");
+        const lastnameField = fields?.find((f) => f.id === "lastname");
+        const emailField = fields?.find((f) => f.id === "email");
+
+        changes.firstname = firstnameField?.value ?? "";
+        changes.lastname = lastnameField?.value ?? "";
+        changes.email = emailField?.value ?? "";
+
         changedFields.forEach((cf) => {
             changes[cf.id] = cf.newValue;
         });

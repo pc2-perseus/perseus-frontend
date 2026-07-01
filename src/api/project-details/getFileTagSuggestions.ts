@@ -4,9 +4,10 @@ import HTTPMethod from "../HTTPMethod.ts";
 import APIResponse from "../APIResponse.ts";
 
 export default async function getFileTagSuggestions(): Promise<string[]> {
-    const call: APIResponse<string[]> = await makeAPICall<string[]>(
-        HTTPMethod.GET,
-        "/file/tags"
-    );
-    return call.statusCode === 200 && call.value !== null ? call.value : [];
+    const call: APIResponse<{ items: string[] }> = await makeAPICall<{
+        items: string[];
+    }>(HTTPMethod.GET, "/file/tags");
+    return call.statusCode === 200 && call.value !== null
+        ? call.value.items
+        : [];
 }

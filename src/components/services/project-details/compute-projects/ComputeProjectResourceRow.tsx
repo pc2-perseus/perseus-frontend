@@ -52,16 +52,20 @@ import updateLocale from "dayjs/plugin/updateLocale";
 import "dayjs/locale/de";
 
 // Custom imports
-import ResourceValue from "../../../interfaces/ResourceValue.ts";
-import Cluster from "../../../interfaces/Cluster.ts";
-import Resource from "../../../interfaces/Resource.ts";
-import formatNumber from "../../../utils/formatNumber.ts";
-import ResourceValueOverwrite from "../../../interfaces/ResourceValueOverwrite.ts";
-import resourceValueOverwriteName from "../../../utils/resourceValueOverwriteName.ts";
-import timeLeftUntil from "../../../utils/timeLeftUntil.ts";
-import isValueNumeric from "../../../utils/isValueNumeric.ts";
-import LoadingBar from "../../LoadingBar.tsx";
-import ResourcePriority from "../../../interfaces/ResourcePriority.ts";
+import ResourceValue from "../../../../interfaces/ResourceValue.ts";
+import Cluster from "../../../../interfaces/Cluster.ts";
+import Resource from "../../../../interfaces/Resource.ts";
+import formatNumber from "../../../../utils/formatNumber.ts";
+import ResourceValueOverwrite from "../../../../interfaces/ResourceValueOverwrite.ts";
+import resourceValueOverwriteName from "../../../../utils/resourceValueOverwriteName.ts";
+import timeLeftUntil from "../../../../utils/timeLeftUntil.ts";
+import isValueNumeric from "../../../../utils/isValueNumeric.ts";
+import {
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../../utils/decimalUnits.ts";
+import LoadingBar from "../../../LoadingBar.tsx";
+import ResourcePriority from "../../../../interfaces/ResourcePriority.ts";
 
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
@@ -1024,13 +1028,13 @@ export default function ComputeProjectResourceRow({
                                         : workingOverwrite.type ===
                                                 "SET_VALUE" &&
                                             isValueNumeric(
-                                                workingOverwrite.value
+                                        workingOverwrite.value
                                             ) &&
                                             resource !== undefined
-                                          ? (
-                                                Number(workingOverwrite.value) /
+                                          ? scaledValueToDecimalString(
+                                                Number(workingOverwrite.value),
                                                 resource.display_unit_factor
-                                            ).toString() +
+                                            ) +
                                             (overwriteDecimalHelperOn
                                                 ? "."
                                                 : "")
@@ -1047,10 +1051,12 @@ export default function ComputeProjectResourceRow({
                                         isValueNumeric(workingOverwrite.value)
                                     ) {
                                         workingOverwrite.value =
-                                            Number(workingOverwrite.value) *
-                                            (resource !== undefined
-                                                ? resource?.display_unit_factor
-                                                : 1);
+                                            scaledDecimalInputToNumber(
+                                                String(workingOverwrite.value),
+                                                resource !== undefined
+                                                    ? resource.display_unit_factor
+                                                    : 1
+                                            );
                                         setOverwriteDecimalHelperOn(
                                             e.currentTarget.value.slice(-1) ===
                                                 "." ||

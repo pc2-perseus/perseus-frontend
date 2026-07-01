@@ -20,6 +20,7 @@ import Cluster from "../../../../interfaces/Cluster.ts";
 import clusterMatch from "../../../../utils/clusterMatch.ts";
 import resourceMatch from "../../../../utils/resourceMatch.ts";
 import resourceValueUnitString from "../../../../utils/resourceValueUnitString.ts";
+import getLastPhase from "./getLastPhase.ts";
 
 // Other imports
 import sortResourceValues from "../../../../utils/sortResourceValues.ts";
@@ -55,22 +56,8 @@ export function extendLastPhaseSubmitFormat(
         return [];
     }
 
-    let lastStart: Date | null = null;
-    let lastEnd: Date | null = null;
-    resourceValues.forEach((rv: ResourceValue) => {
-        if (
-            lastStart === null ||
-            lastStart.valueOf() < new Date(rv.start).valueOf()
-        ) {
-            lastStart = new Date(rv.start);
-            if (
-                lastEnd === null ||
-                lastEnd.valueOf() < new Date(rv.end).valueOf()
-            ) {
-                lastEnd = new Date(rv.end);
-            }
-        }
-    });
+    const { start: lastStart, end: lastEnd } = getLastPhase(resourceValues);
+
     if (lastStart !== null && lastEnd !== null) {
         const newEnd = new Date(lastEnd);
         const originalDate: number =
@@ -151,22 +138,7 @@ export default function ExtendLastPhase({
 
     const theme = useTheme();
 
-    let lastStart: Date | null = null;
-    let lastEnd: Date | null = null;
-    resourceValues.forEach((rv: ResourceValue) => {
-        if (
-            lastStart === null ||
-            lastStart.valueOf() < new Date(rv.start).valueOf()
-        ) {
-            lastStart = new Date(rv.start);
-            if (
-                lastEnd === null ||
-                lastEnd.valueOf() < new Date(rv.end).valueOf()
-            ) {
-                lastEnd = new Date(rv.end);
-            }
-        }
-    });
+    const { start: lastStart, end: lastEnd } = getLastPhase(resourceValues);
 
     let newEnd: Date | null = null;
     if (lastEnd !== null) {

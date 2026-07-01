@@ -27,6 +27,12 @@ import clusterMatch from "../../../utils/clusterMatch.ts";
 // Other imports
 import dayjs, { Dayjs } from "dayjs";
 import ResourcePriority from "../../../interfaces/ResourcePriority.ts";
+import DecimalTextField from "../../DecimalTextField.tsx";
+import {
+    decimalInputToNumber,
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../utils/decimalUnits.ts";
 
 export default function ResourceCardRow({
     value,
@@ -51,9 +57,6 @@ export default function ResourceCardRow({
         resources,
         clusters
     );
-    const [decimalHelperOn, setDecimalHelperOn] =
-        React.useState<boolean>(false);
-
     return (
         <TableRow>
             <TableCell>{resource?.name}</TableCell>
@@ -141,16 +144,15 @@ export default function ResourceCardRow({
                 </Select>
             </TableCell>
             <TableCell>
-                <TextField
+                <DecimalTextField
                     label=""
                     value={
-                        (resource !== undefined
-                            ? Math.round(
-                                  (value.value / resource.display_unit_factor) *
-                                      1000
-                              ) / 1000
-                            : value.value
-                        ).toString() + (decimalHelperOn ? "." : "")
+                        resource !== undefined
+                            ? scaledValueToDecimalString(
+                                  value.value,
+                                  resource.display_unit_factor
+                              )
+                            : value.value.toString()
                     }
                     size="small"
                     slotProps={{
@@ -162,16 +164,14 @@ export default function ResourceCardRow({
                             ),
                         },
                     }}
-                    onChange={(e) => {
+                    onValueChange={(newValue: string) => {
                         value.value =
-                            Number(e.currentTarget.value.replaceAll(",", ".")) *
-                            (resource === undefined
-                                ? 1
-                                : resource.display_unit_factor);
-                        setDecimalHelperOn(
-                            e.currentTarget.value.slice(-1) === "." ||
-                                e.currentTarget.value.slice(-1) === ","
-                        );
+                            resource === undefined
+                                ? decimalInputToNumber(newValue)
+                                : scaledDecimalInputToNumber(
+                                      newValue,
+                                      resource.display_unit_factor
+                                  );
                         onChange(value, index);
                     }}
                     fullWidth

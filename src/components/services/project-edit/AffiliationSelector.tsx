@@ -17,9 +17,29 @@ export default function AffiliationSelector({
     organizations: Organization[];
     onChange: (value: Institute | null) => void;
 }): React.ReactElement {
+    function getAffiliationLabel(ins: Institute): string {
+        return `${organizations.find(
+            (organization) => organization._id === ins.organization_id
+        )?.name ?? ""}, ${ins.name}`;
+    }
+
     const [currentValue, setCurrentValue] = React.useState<
         Institute | null | undefined
     >(institutes.find((ins: Institute) => ins._id === affiliationId));
+
+    const sortedInstitutes = React.useMemo(
+        () =>
+            [...institutes].sort((a: Institute, b: Institute) =>
+                getAffiliationLabel(a).localeCompare(getAffiliationLabel(b))
+            ),
+        [institutes, organizations]
+    );
+
+    React.useEffect(() => {
+        setCurrentValue(
+            institutes.find((ins: Institute) => ins._id === affiliationId)
+        );
+    }, [affiliationId, institutes]);
 
     return (
         <Autocomplete
@@ -27,15 +47,8 @@ export default function AffiliationSelector({
                 <TextField {...params} label="Affiliation" />
             )}
             value={currentValue === undefined ? null : currentValue}
-            options={institutes}
-            getOptionLabel={(ins: Institute) =>
-                organizations.find(
-                    (organization) =>
-                        organization._id === currentValue?.organization_id
-                )?.name +
-                ", " +
-                ins.name
-            }
+            options={sortedInstitutes}
+            getOptionLabel={getAffiliationLabel}
             isOptionEqualToValue={(ins1: Institute, ins2: Institute) =>
                 ins1._id === ins2._id
             }

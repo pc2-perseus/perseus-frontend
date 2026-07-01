@@ -10,10 +10,15 @@ import {
     Typography,
     useTheme,
 } from "@mui/material";
-import ResourceValue from "../../../interfaces/ResourceValue.ts";
-import LimitValue from "../../../interfaces/LimitValue.ts";
-import Resource from "../../../interfaces/Resource.ts";
-import Cluster from "../../../interfaces/Cluster.ts";
+import ResourceValue from "../../../../interfaces/ResourceValue.ts";
+import LimitValue from "../../../../interfaces/LimitValue.ts";
+import Resource from "../../../../interfaces/Resource.ts";
+import Cluster from "../../../../interfaces/Cluster.ts";
+import DecimalTextField from "../../../DecimalTextField.tsx";
+import {
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../../utils/decimalUnits.ts";
 
 export default function EditComputeProjectResources({
     computeProjectId,
@@ -363,14 +368,16 @@ export default function EditComputeProjectResources({
                                                 />
                                             </Grid>
                                             <Grid size={{ xs: 12, md: 5 }}>
-                                                <TextField
-                                                    value={(
-                                                        currentValue /
-                                                        (resource === undefined
+                                                <DecimalTextField
+                                                    value={scaledValueToDecimalString(
+                                                        currentValue,
+                                                        resource === undefined
                                                             ? 1
-                                                            : resource.display_unit_factor)
-                                                    ).toString()}
-                                                    onChange={(e) => {
+                                                            : resource.display_unit_factor
+                                                    )}
+                                                    onValueChange={(
+                                                        newValue: string
+                                                    ) => {
                                                         changeValue(
                                                             phase,
                                                             resourceValue.resource_id,
@@ -378,19 +385,15 @@ export default function EditComputeProjectResources({
                                                                 computeProjectId
                                                                 ? resourceValue.value
                                                                 : 0,
-                                                            Number(
-                                                                e.currentTarget.value.replaceAll(
-                                                                    ",",
-                                                                    "."
-                                                                )
-                                                            ) *
-                                                                (resource ===
-                                                                undefined
+                                                            scaledDecimalInputToNumber(
+                                                                newValue,
+                                                                resource ===
+                                                                    undefined
                                                                     ? 1
-                                                                    : resource.display_unit_factor)
+                                                                    : resource.display_unit_factor
+                                                            )
                                                         );
                                                     }}
-                                                    type="number"
                                                     size="small"
                                                     label="Assigned value"
                                                     error={

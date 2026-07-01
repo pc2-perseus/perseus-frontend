@@ -39,20 +39,24 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 // Custom imports
-import LimitValue from "../../../interfaces/LimitValue.ts";
-import Limit from "../../../interfaces/Limit.ts";
-import formatNumber from "../../../utils/formatNumber.ts";
-import LimitValueOverwrite from "../../../interfaces/LimitValueOverwrite.ts";
-import timeLeftUntil from "../../../utils/timeLeftUntil.ts";
-import resourceValueOverwriteName from "../../../utils/resourceValueOverwriteName.ts";
+import LimitValue from "../../../../interfaces/LimitValue.ts";
+import Limit from "../../../../interfaces/Limit.ts";
+import formatNumber from "../../../../utils/formatNumber.ts";
+import LimitValueOverwrite from "../../../../interfaces/LimitValueOverwrite.ts";
+import timeLeftUntil from "../../../../utils/timeLeftUntil.ts";
+import resourceValueOverwriteName from "../../../../utils/resourceValueOverwriteName.ts";
 import EditIcon from "@mui/icons-material/Edit";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
-import isValueNumeric from "../../../utils/isValueNumeric.ts";
-import ResourceValueOverwrite from "../../../interfaces/ResourceValueOverwrite.ts";
+import isValueNumeric from "../../../../utils/isValueNumeric.ts";
+import ResourceValueOverwrite from "../../../../interfaces/ResourceValueOverwrite.ts";
+import {
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../../../utils/decimalUnits.ts";
 
 export default function ComputeProjectLimitRow({
     limit,
@@ -642,8 +646,10 @@ export default function ComputeProjectLimitRow({
                                             workingOverwrite.value
                                         ) &&
                                         limit !== undefined
-                                      ? Number(workingOverwrite.value) /
-                                        limit.display_unit_factor
+                                      ? scaledValueToDecimalString(
+                                            Number(workingOverwrite.value),
+                                            limit.display_unit_factor
+                                        )
                                       : workingOverwrite.value
                             }
                             onChange={(e) => {
@@ -653,10 +659,12 @@ export default function ComputeProjectLimitRow({
                                     isValueNumeric(workingOverwrite.value)
                                 ) {
                                     workingOverwrite.value =
-                                        Number(workingOverwrite.value) *
-                                        (limit !== undefined
-                                            ? limit?.display_unit_factor
-                                            : 1);
+                                        scaledDecimalInputToNumber(
+                                            String(workingOverwrite.value),
+                                            limit !== undefined
+                                                ? limit.display_unit_factor
+                                                : 1
+                                        );
                                 }
                                 setWorkingOverwrite(
                                     JSON.parse(JSON.stringify(workingOverwrite))

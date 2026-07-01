@@ -12,8 +12,10 @@ async function loadLocalProxy() {
 
 export default defineConfig(async () => {
     const proxy = await loadLocalProxy();
+    const base = process.env.BASE_PATH ?? "/";
 
     return {
+        base,
         plugins: [react()],
         server: {
             allowedHosts: ["perseus.localhost", "localhost"],
