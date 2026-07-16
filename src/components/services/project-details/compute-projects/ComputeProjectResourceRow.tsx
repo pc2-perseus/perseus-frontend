@@ -1028,7 +1028,7 @@ export default function ComputeProjectResourceRow({
                                         : workingOverwrite.type ===
                                                 "SET_VALUE" &&
                                             isValueNumeric(
-                                        workingOverwrite.value
+                                                workingOverwrite.value
                                             ) &&
                                             resource !== undefined
                                           ? scaledValueToDecimalString(

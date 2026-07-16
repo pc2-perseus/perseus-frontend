@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import Job from "../../../../interfaces/Job.ts";
 import Cluster from "../../../../interfaces/Cluster.ts";
+import { formatJobId, isGroupJob } from "./jobDisplay.ts";
 
 function getClusterName(clusterId: string, clusters: Cluster[]): string {
     return (
@@ -50,7 +51,13 @@ export default function ComputeProjectJobDetailsDialog({
         job === null
             ? []
             : [
-                  { label: "Job ID", value: job.job_id },
+                  { label: "Job ID", value: formatJobId(job) },
+                  ...(isGroupJob(job)
+                      ? [
+                            { label: "Group ID", value: job.group_id },
+                            { label: "Group index", value: job.group_index },
+                        ]
+                      : []),
                   { label: "Job name", value: job.job_name },
                   { label: "Project OID", value: job.project_oid },
                   {
@@ -94,7 +101,7 @@ export default function ComputeProjectJobDetailsDialog({
     return (
         <Dialog open={job !== null} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                Job {job?.job_id}
+                Job {job !== null ? formatJobId(job) : ""}
                 {job?.job_name !== null &&
                     job?.job_name !== undefined &&
                     `: ${job.job_name}`}

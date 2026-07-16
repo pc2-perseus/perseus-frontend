@@ -3,12 +3,8 @@ import React from "react";
 
 // MUI imports
 import {
-    Box,
     Button,
     Card,
-    FormControlLabel,
-    Radio,
-    RadioGroup,
     Table,
     TableBody,
     TableCell,
@@ -26,6 +22,7 @@ import FrontendConfiguration from "../../interfaces/FrontendConfiguration.ts";
 import LoadingBar from "../LoadingBar.tsx";
 import getFrontendConfig from "../../api/frontend-configuration/getFrontendConfig.ts";
 import updateFrontendConfig from "../../api/frontend-configuration/updateFrontendConfig.ts";
+import ColorPicker from "../ColorPicker.tsx";
 
 export default function FrontendConfigurationManager(): React.ReactElement {
     const [configuration, setConfiguration] =
@@ -96,88 +93,18 @@ export default function FrontendConfigurationManager(): React.ReactElement {
                                 <TableRow key={type}>
                                     <TableCell>{type}</TableCell>
                                     <TableCell>
-                                        <RadioGroup
-                                            row
+                                        <ColorPicker
                                             value={
                                                 configuration
-                                                    .project_type_colors[
-                                                    type
-                                                ] === null
-                                                    ? "false"
-                                                    : "true"
+                                                    .project_type_colors[type]
                                             }
-                                            onChange={(e) => {
-                                                if (
-                                                    (
-                                                        e.target as HTMLInputElement
-                                                    ).value === "false"
-                                                ) {
-                                                    changeProjectTypeColor(
-                                                        type,
-                                                        null
-                                                    );
-                                                } else {
-                                                    changeProjectTypeColor(
-                                                        type,
-                                                        "#ffffff"
-                                                    );
-                                                }
-                                            }}
-                                        >
-                                            <FormControlLabel
-                                                control={<Radio />}
-                                                label="no color"
-                                                value="false"
-                                            />
-                                            <FormControlLabel
-                                                control={<Radio />}
-                                                label="color"
-                                                value="true"
-                                            />
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <input
-                                                    type="color"
-                                                    disabled={
-                                                        configuration
-                                                            .project_type_colors[
-                                                            type
-                                                        ] === null
-                                                    }
-                                                    style={{
-                                                        opacity:
-                                                            configuration
-                                                                .project_type_colors[
-                                                                type
-                                                            ] === null
-                                                                ? "0.25"
-                                                                : undefined,
-                                                    }}
-                                                    value={
-                                                        configuration
-                                                            .project_type_colors[
-                                                            type
-                                                        ] === null
-                                                            ? "#ffffff"
-                                                            : configuration
-                                                                  .project_type_colors[
-                                                                  type
-                                                              ]
-                                                    }
-                                                    onChange={(e) => {
-                                                        changeProjectTypeColor(
-                                                            type,
-                                                            e.currentTarget
-                                                                .value
-                                                        );
-                                                    }}
-                                                />
-                                            </Box>
-                                        </RadioGroup>
+                                            onChange={(color) =>
+                                                changeProjectTypeColor(
+                                                    type,
+                                                    color
+                                                )
+                                            }
+                                        />
                                     </TableCell>
                                 </TableRow>
                             )
@@ -226,88 +153,15 @@ export default function FrontendConfigurationManager(): React.ReactElement {
                                         />
                                     </TableCell>
                                     <TableCell>
-                                        <RadioGroup
-                                            row
+                                        <ColorPicker
                                             value={
                                                 configuration
-                                                    .state_event_colors[
-                                                    state
-                                                ] === null
-                                                    ? "false"
-                                                    : "true"
+                                                    .state_event_colors[state]
                                             }
-                                            onChange={(e) => {
-                                                if (
-                                                    (
-                                                        e.target as HTMLInputElement
-                                                    ).value === "false"
-                                                ) {
-                                                    changeStateColor(
-                                                        state,
-                                                        null
-                                                    );
-                                                } else {
-                                                    changeStateColor(
-                                                        state,
-                                                        "#ffffff"
-                                                    );
-                                                }
-                                            }}
-                                        >
-                                            <FormControlLabel
-                                                control={<Radio />}
-                                                label="no color"
-                                                value="false"
-                                            />
-                                            <FormControlLabel
-                                                control={<Radio />}
-                                                label="color"
-                                                value="true"
-                                            />
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <input
-                                                    type="color"
-                                                    disabled={
-                                                        configuration
-                                                            .state_event_colors[
-                                                            state
-                                                        ] === null
-                                                    }
-                                                    style={{
-                                                        opacity:
-                                                            configuration
-                                                                .state_event_colors[
-                                                                state
-                                                            ] === null
-                                                                ? "0.25"
-                                                                : undefined,
-                                                    }}
-                                                    value={
-                                                        configuration
-                                                            .state_event_colors[
-                                                            state
-                                                        ] === null
-                                                            ? "#ffffff"
-                                                            : configuration
-                                                                  .state_event_colors[
-                                                                  state
-                                                              ]
-                                                    }
-                                                    onChange={(e) => {
-                                                        changeStateColor(
-                                                            state,
-                                                            e.currentTarget
-                                                                .value
-                                                        );
-                                                    }}
-                                                />
-                                            </Box>
-                                        </RadioGroup>
+                                            onChange={(color) =>
+                                                changeStateColor(state, color)
+                                            }
+                                        />
                                     </TableCell>
                                 </TableRow>
                             )

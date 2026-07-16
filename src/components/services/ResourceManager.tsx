@@ -3,6 +3,7 @@ import React from "react";
 
 // MUI imports
 import {
+    Autocomplete,
     Box,
     Button,
     Dialog,
@@ -11,6 +12,9 @@ import {
     DialogTitle,
     FormControl,
     InputLabel,
+    List,
+    ListItemButton,
+    ListItemText,
     MenuItem,
     Paper,
     Select,
@@ -35,6 +39,53 @@ import postResource from "../../api/postResource.ts";
 import postLimit from "../../api/postLimit.ts";
 import LoadingBar from "../LoadingBar.tsx";
 import SearchBar from "../SearchBar.tsx";
+import DecimalTextField from "../DecimalTextField.tsx";
+import {
+    scaledDecimalInputToNumber,
+    scaledValueToDecimalString,
+} from "../../utils/decimalUnits.ts";
+
+function resourceBoundsErrors(resource: Resource | null): {
+    minMaxError: string | null;
+    defaultValueError: string | null;
+} {
+    if (resource === null) {
+        return { minMaxError: null, defaultValueError: null };
+    }
+
+    const { minimum, maximum, default_value } = resource;
+
+    const minMaxError =
+        minimum !== null && maximum !== null && minimum > maximum
+            ? "Minimum cannot be greater than maximum"
+            : null;
+
+    const defaultValueError =
+        default_value !== null && minimum !== null && default_value < minimum
+            ? "Default value cannot be less than minimum"
+            : default_value !== null &&
+                maximum !== null &&
+                default_value > maximum
+              ? "Default value cannot be greater than maximum"
+              : null;
+
+    return { minMaxError, defaultValueError };
+}
+
+function flattenResourceTree(
+    allResources: Resource[],
+    resources: Resource[],
+    depth: number
+): { resource: Resource; depth: number }[] {
+    return resources.flatMap((resource) => [
+        { resource, depth },
+        ...flattenResourceTree(
+            allResources,
+            allResources.filter((r) => r.parent_oid === resource._id),
+            depth + 1
+        ),
+    ]);
+}
 
 export default function ResourceManager(): React.ReactElement {
     const [loading, setLoading] = React.useState<boolean>(true);
@@ -128,6 +179,9 @@ export default function ResourceManager(): React.ReactElement {
         return limit.name.toLowerCase().includes(searchFilter);
     });
 
+    const { minMaxError, defaultValueError } =
+        resourceBoundsErrors(resourceEdit);
+
     return (
         <Box>
             <SearchBar
@@ -177,38 +231,57 @@ export default function ResourceManager(): React.ReactElement {
                                         display_unit: null,
                                         display_unit_factor: 1,
                                         resource_type: "cumulative",
+                                        parent_oid: null,
+                                        default_partitions: [],
+                                        trackable_resources: [],
+                                        minimum: null,
+                                        maximum: null,
+                                        default_value: null,
                                     });
                                 }}
                                 sx={{ float: "right", mx: 1 }}
                             >
                                 <AddIcon />
                             </Button>
-                            <SimpleTreeView disableSelection sx={{ mt: 2 }}>
-                                {resources
-                                    .filter((r) => r.cluster_id === cluster.id)
-                                    .map((resource, index2: number) => {
-                                        return (
-                                            <TreeItem
-                                                itemId={
-                                                    index.toString() +
-                                                    "-resources-" +
-                                                    index2.toString()
-                                                }
-                                                key={index2}
-                                                onClick={() => {
-                                                    setResourceEdit(
-                                                        JSON.parse(
-                                                            JSON.stringify(
-                                                                resource
-                                                            )
-                                                        )
-                                                    );
-                                                }}
-                                                label={resource.name}
-                                            />
+                            <List sx={{ mt: 2, py: 0 }}>
+                                {(() => {
+                                    const clusterResources = resources.filter(
+                                        (r) => r.cluster_id === cluster.id
+                                    );
+                                    const rootResources =
+                                        clusterResources.filter(
+                                            (r) =>
+                                                r.parent_oid === null ||
+                                                !clusterResources.some(
+                                                    (p) =>
+                                                        p._id === r.parent_oid
+                                                )
                                         );
-                                    })}
-                            </SimpleTreeView>
+                                    return flattenResourceTree(
+                                        clusterResources,
+                                        rootResources,
+                                        0
+                                    ).map(({ resource, depth }, index2) => (
+                                        <ListItemButton
+                                            key={index2}
+                                            sx={{ pl: 2 + depth * 2 }}
+                                            onClick={() =>
+                                                setResourceEdit(
+                                                    JSON.parse(
+                                                        JSON.stringify(
+                                                            resource
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                        >
+                                            <ListItemText
+                                                primary={resource.name}
+                                            />
+                                        </ListItemButton>
+                                    ));
+                                })()}
+                            </List>
                         </Paper>
                     );
                 })}
@@ -418,6 +491,194 @@ export default function ResourceManager(): React.ReactElement {
                                 }
                             }}
                         />
+                        <FormControl fullWidth>
+                            <InputLabel>Parent</InputLabel>
+                            <Select
+                                variant="outlined"
+                                label="Parent"
+                                value={resourceEdit?.parent_oid ?? ""}
+                                onChange={(e) => {
+                                    if (resourceEdit !== null) {
+                                        resourceEdit.parent_oid =
+                                            e.target.value === ""
+                                                ? null
+                                                : (e.target.value as string);
+                                        setResourceEdit(
+                                            JSON.parse(
+                                                JSON.stringify(resourceEdit)
+                                            )
+                                        );
+                                    }
+                                }}
+                            >
+                                <MenuItem value="">
+                                    <em>None</em>
+                                </MenuItem>
+                                {resources
+                                    .filter(
+                                        (r) =>
+                                            r.cluster_id ===
+                                                resourceEdit?.cluster_id &&
+                                            r._id !== resourceEdit?._id
+                                    )
+                                    .map((r) => (
+                                        <MenuItem key={r._id} value={r._id}>
+                                            {r.name}
+                                        </MenuItem>
+                                    ))}
+                            </Select>
+                        </FormControl>
+                        <Autocomplete
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Default partitions"
+                                    helperText="Press enter to add a new partition"
+                                />
+                            )}
+                            options={[]}
+                            freeSolo
+                            value={resourceEdit?.default_partitions ?? []}
+                            fullWidth
+                            multiple
+                            onChange={(_, values) => {
+                                if (resourceEdit !== null) {
+                                    resourceEdit.default_partitions =
+                                        values as string[];
+                                    setResourceEdit(
+                                        JSON.parse(JSON.stringify(resourceEdit))
+                                    );
+                                }
+                            }}
+                        />
+                        <Autocomplete
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Trackable resources"
+                                    helperText="Press enter to add a new trackable resource"
+                                />
+                            )}
+                            options={[]}
+                            freeSolo
+                            value={resourceEdit?.trackable_resources ?? []}
+                            fullWidth
+                            multiple
+                            onChange={(_, values) => {
+                                if (resourceEdit !== null) {
+                                    resourceEdit.trackable_resources =
+                                        values as string[];
+                                    setResourceEdit(
+                                        JSON.parse(JSON.stringify(resourceEdit))
+                                    );
+                                }
+                            }}
+                        />
+                        <DecimalTextField
+                            variant="outlined"
+                            label={
+                                "Minimum" +
+                                (resourceEdit?.display_unit
+                                    ? " (" + resourceEdit.display_unit + ")"
+                                    : "")
+                            }
+                            value={
+                                resourceEdit?.minimum === null ||
+                                resourceEdit?.minimum === undefined
+                                    ? ""
+                                    : scaledValueToDecimalString(
+                                          resourceEdit.minimum,
+                                          resourceEdit.display_unit_factor
+                                      )
+                            }
+                            onValueChange={(value) => {
+                                if (resourceEdit !== null) {
+                                    resourceEdit.minimum =
+                                        value === ""
+                                            ? null
+                                            : scaledDecimalInputToNumber(
+                                                  value,
+                                                  resourceEdit.display_unit_factor
+                                              );
+                                    setResourceEdit(
+                                        JSON.parse(JSON.stringify(resourceEdit))
+                                    );
+                                }
+                            }}
+                            error={minMaxError !== null}
+                            helperText={minMaxError ?? undefined}
+                            fullWidth
+                        />
+                        <DecimalTextField
+                            variant="outlined"
+                            label={
+                                "Maximum" +
+                                (resourceEdit?.display_unit
+                                    ? " (" + resourceEdit.display_unit + ")"
+                                    : "")
+                            }
+                            value={
+                                resourceEdit?.maximum === null ||
+                                resourceEdit?.maximum === undefined
+                                    ? ""
+                                    : scaledValueToDecimalString(
+                                          resourceEdit.maximum,
+                                          resourceEdit.display_unit_factor
+                                      )
+                            }
+                            onValueChange={(value) => {
+                                if (resourceEdit !== null) {
+                                    resourceEdit.maximum =
+                                        value === ""
+                                            ? null
+                                            : scaledDecimalInputToNumber(
+                                                  value,
+                                                  resourceEdit.display_unit_factor
+                                              );
+                                    setResourceEdit(
+                                        JSON.parse(JSON.stringify(resourceEdit))
+                                    );
+                                }
+                            }}
+                            error={minMaxError !== null}
+                            helperText={minMaxError ?? undefined}
+                            fullWidth
+                        />
+                        <DecimalTextField
+                            variant="outlined"
+                            label={
+                                "Default value" +
+                                (resourceEdit?.display_unit
+                                    ? " (" + resourceEdit.display_unit + ")"
+                                    : "")
+                            }
+                            value={
+                                resourceEdit?.default_value === null ||
+                                resourceEdit?.default_value === undefined
+                                    ? ""
+                                    : scaledValueToDecimalString(
+                                          resourceEdit.default_value,
+                                          resourceEdit.display_unit_factor
+                                      )
+                            }
+                            onValueChange={(value) => {
+                                if (resourceEdit !== null) {
+                                    resourceEdit.default_value =
+                                        value === ""
+                                            ? null
+                                            : scaledDecimalInputToNumber(
+                                                  value,
+                                                  resourceEdit.display_unit_factor
+                                              );
+                                    setResourceEdit(
+                                        JSON.parse(JSON.stringify(resourceEdit))
+                                    );
+                                }
+                            }}
+                            error={defaultValueError !== null}
+                            helperText={defaultValueError ?? undefined}
+                            fullWidth
+                        />
                     </Stack>
                 </DialogContent>
                 <DialogActions>
@@ -428,7 +689,13 @@ export default function ResourceManager(): React.ReactElement {
                     >
                         Cancel
                     </Button>
-                    <Button variant="contained" onClick={editResource}>
+                    <Button
+                        variant="contained"
+                        onClick={editResource}
+                        disabled={
+                            minMaxError !== null || defaultValueError !== null
+                        }
+                    >
                         Submit
                     </Button>
                 </DialogActions>

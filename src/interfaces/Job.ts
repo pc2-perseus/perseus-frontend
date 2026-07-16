@@ -3,6 +3,8 @@ import type { JobState } from "./JobState.ts";
 
 export default interface Job extends DatabaseItem {
     job_id: number;
+    group_id?: number | null;
+    group_index?: number | null;
     job_name: string | null;
     project_oid: string;
     compute_project_id: string;

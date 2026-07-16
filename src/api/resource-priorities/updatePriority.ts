@@ -12,6 +12,7 @@ export default async function updatePriority(
     }>(HTTPMethod.POST, "/service/PriorityManager/" + priority._id, {
         priority_id: priority.priority_id,
         value: priority.value,
+        indicator_color: priority.indicator_color,
     });
 
     return call.statusCode === 200 && call.value !== null

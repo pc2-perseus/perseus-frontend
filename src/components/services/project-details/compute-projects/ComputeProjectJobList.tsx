@@ -1,27 +1,16 @@
 import React from "react";
-import { Box, Button, IconButton, Tooltip } from "@mui/material";
-import {
-    DataGrid,
-    GridColDef,
-    GridPaginationModel,
-    GridRenderCellParams,
-} from "@mui/x-data-grid";
+import { Box, Button } from "@mui/material";
+import { GridPaginationModel } from "@mui/x-data-grid";
 import CloseIcon from "@mui/icons-material/Close";
-import InfoOutlinedIcon from "@mui/icons-material/Info";
-import StateIcon from "./StateIcon.tsx";
 import ComputeProjectJobDetailsDialog from "./ComputeProjectJobDetailsDialog.tsx";
+import ComputeProjectGroupJobsDialog from "./ComputeProjectGroupJobsDialog.tsx";
+import ComputeProjectJobsTable from "./ComputeProjectJobsTable.tsx";
 import getJobs from "../../../../api/project-details/getJobs.ts";
 import Job from "../../../../interfaces/Job.ts";
 import Cluster from "../../../../interfaces/Cluster.ts";
-import { JOB_STATES } from "../../../../interfaces/JobState.ts";
+import { isGroupJob } from "./jobDisplay.ts";
 
 const DEFAULT_ROWS_PER_PAGE = 10;
-
-function getClusterName(clusterId: string, clusters: Cluster[]): string {
-    return (
-        clusters.find((cluster) => cluster.id === clusterId)?.name ?? clusterId
-    );
-}
 
 export default function ComputeProjectJobList({
     projectId,
@@ -41,6 +30,9 @@ export default function ComputeProjectJobList({
             pageSize: DEFAULT_ROWS_PER_PAGE,
         });
     const [selectedJob, setSelectedJob] = React.useState<Job | null>(null);
+    const [selectedGroupJob, setSelectedGroupJob] = React.useState<Job | null>(
+        null
+    );
 
     const hasNextPage: boolean =
         jobs !== null && jobs.length === paginationModel.pageSize;
@@ -48,77 +40,6 @@ export default function ComputeProjectJobList({
         jobs !== null && !hasNextPage
             ? paginationModel.page * paginationModel.pageSize + jobs.length
             : -1;
-
-    const columns: GridColDef<Job>[] = [
-        {
-            field: "state",
-            headerName: "",
-            type: "singleSelect",
-            valueOptions: [...JOB_STATES],
-            width: 48,
-            filterable: true,
-            sortable: true,
-            hideable: false,
-            align: "center",
-            renderCell: (params: GridRenderCellParams<Job>) => (
-                <Tooltip title={params.row.state ?? "Unknown"}>
-                    <span>
-                        <StateIcon state={params.row.state} />
-                    </span>
-                </Tooltip>
-            ),
-        },
-        {
-            field: "details",
-            headerName: "",
-            width: 44,
-            sortable: false,
-            filterable: false,
-            hideable: false,
-            disableColumnMenu: true,
-            align: "center",
-            renderCell: (params: GridRenderCellParams<Job>) => (
-                <Tooltip title="Show job details">
-                    <IconButton
-                        size="small"
-                        onClick={() => setSelectedJob(params.row)}
-                    >
-                        <InfoOutlinedIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-            ),
-        },
-        {
-            field: "job_id",
-            headerName: "Job ID",
-            type: "number",
-            width: 100,
-            renderCell: (params: GridRenderCellParams<Job>) =>
-                params.row.job_id.toString(),
-        },
-        {
-            field: "cluster_id",
-            headerName: "Cluster",
-            flex: 1,
-            minWidth: 140,
-            valueGetter: (_value, row) =>
-                getClusterName(row.cluster_id, clusters),
-        },
-        {
-            field: "partition",
-            headerName: "Partition",
-            flex: 1,
-            minWidth: 120,
-            valueGetter: (_value, row) => row.partition ?? "",
-        },
-        {
-            field: "user",
-            headerName: "User",
-            flex: 1,
-            minWidth: 120,
-            valueGetter: (_value, row) => row.user ?? "",
-        },
-    ];
 
     React.useEffect(() => {
         let active = true;
@@ -185,43 +106,25 @@ export default function ComputeProjectJobList({
                     boxSizing: "border-box",
                 }}
             >
-                <DataGrid
-                    columns={columns}
-                    rows={jobs ?? []}
-                    density="compact"
-                    rowHeight={40}
-                    columnHeaderHeight={40}
-                    sx={{ height: "100%" }}
-                    getRowId={(row: Job) => `${row.cluster_id}-${row.job_id}`}
+                <ComputeProjectJobsTable
+                    jobs={jobs ?? []}
+                    clusters={clusters}
                     loading={jobs === null}
-                    paginationMode="server"
-                    disableColumnSorting={true}
-                    disableColumnFilter={true}
-                    rowCount={rowCount}
-                    paginationMeta={{
-                        hasNextPage,
-                    }}
                     paginationModel={paginationModel}
-                    initialState={{
-                        sorting: {
-                            sortModel: [{ field: "job_id", sort: "asc" }],
-                        },
-                    }}
-                    pageSizeOptions={[10, 25]}
-                    onPaginationModelChange={(
-                        nextPaginationModel: GridPaginationModel
-                    ) => {
-                        if (
-                            nextPaginationModel.page > paginationModel.page &&
-                            !hasNextPage
-                        ) {
+                    hasNextPage={hasNextPage}
+                    rowCount={rowCount}
+                    onPaginationModelChange={setPaginationModel}
+                    onJobDetails={setSelectedJob}
+                    onGroupDetails={setSelectedGroupJob}
+                    hideStateForGroupJobs={true}
+                    jobIdFormat="summary"
+                    onJobIdClick={(job: Job) => {
+                        if (isGroupJob(job)) {
+                            setSelectedGroupJob(job);
                             return;
                         }
-                        setPaginationModel(nextPaginationModel);
-                    }}
-                    disableRowSelectionOnClick
-                    localeText={{
-                        noRowsLabel: "No jobs found",
+
+                        setSelectedJob(job);
                     }}
                 />
             </Box>
@@ -229,6 +132,13 @@ export default function ComputeProjectJobList({
                 job={selectedJob}
                 clusters={clusters}
                 onClose={() => setSelectedJob(null)}
+            />
+            <ComputeProjectGroupJobsDialog
+                job={selectedGroupJob}
+                projectId={projectId}
+                computeProjectId={computeProjectId}
+                clusters={clusters}
+                onClose={() => setSelectedGroupJob(null)}
             />
         </Box>
     );

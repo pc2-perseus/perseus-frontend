@@ -30,7 +30,8 @@
         "react-dom": "^18.2.0",
         "react-file-icon": "^1.5.0",
         "react-router-dom": "^6.22.2",
-        "recharts": "^2.15.3"
+        "recharts": "^2.15.3",
+        "rolldown": "^1.1.5"
     },
     "devDependencies": {
         "@types/dompurify": "^3.0.5",
@@ -40,12 +41,12 @@
         "@types/react-file-icon": "^1.0.4",
         "@typescript-eslint/eslint-plugin": "^7.0.2",
         "@typescript-eslint/parser": "^7.0.2",
-        "@vitejs/plugin-react": "^4.2.1",
+        "@vitejs/plugin-react": "^6.0.3",
         "eslint": "^8.56.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.4.5",
         "prettier": "^3.2.5",
         "typescript": "^5.2.2",
-        "vite": "^5.1.4"
+        "vite": "^8.1.4"
     }
 }

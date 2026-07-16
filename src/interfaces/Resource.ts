@@ -6,4 +6,10 @@ export default interface Resource {
     resource_type: "cumulative" | "snapshot";
     display_unit: string | null;
     display_unit_factor: number;
+    parent_oid: string | null;
+    default_partitions: string[];
+    trackable_resources: string[];
+    minimum: number | null;
+    maximum: number | null;
+    default_value: number | null;
 }

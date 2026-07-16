@@ -5,7 +5,6 @@ import React from "react";
 import {
     Autocomplete,
     Button,
-    InputAdornment,
     MenuItem,
     Select,
     TableCell,
@@ -145,7 +144,8 @@ export default function ResourceCardRow({
             </TableCell>
             <TableCell>
                 <DecimalTextField
-                    label=""
+                    sx={{ minWidth: "90px" }}
+                    label={resource?.display_unit}
                     value={
                         resource !== undefined
                             ? scaledValueToDecimalString(
@@ -155,15 +155,7 @@ export default function ResourceCardRow({
                             : value.value.toString()
                     }
                     size="small"
-                    slotProps={{
-                        input: {
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    {resource?.display_unit}
-                                </InputAdornment>
-                            ),
-                        },
-                    }}
+                    slotProps={{}}
                     onValueChange={(newValue: string) => {
                         value.value =
                             resource === undefined

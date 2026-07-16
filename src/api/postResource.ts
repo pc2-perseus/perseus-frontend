@@ -17,6 +17,12 @@ export default async function postResource(
         resource_type: resource.resource_type,
         display_unit: resource.display_unit,
         display_unit_factor: resource.display_unit_factor,
+        parent_oid: resource.parent_oid,
+        default_partitions: resource.default_partitions,
+        trackable_resources: resource.trackable_resources,
+        minimum: resource.minimum,
+        maximum: resource.maximum,
+        default_value: resource.default_value,
     });
     return call.statusCode === 200 && call.value !== null
         ? call.value.result

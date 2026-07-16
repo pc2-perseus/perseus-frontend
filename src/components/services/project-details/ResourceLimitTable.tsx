@@ -354,7 +354,13 @@ function PhaseRow({
 
     return (
         <>
-            <TableRow sx={{ backgroundColor: theme.palette.action.hover }}>
+            <TableRow
+                sx={{
+                    backgroundColor: theme.palette.action.hover,
+                    cursor: "pointer",
+                }}
+                onClick={() => setShowPhase(!showPhase)}
+            >
                 <TableCell
                     sx={{
                         borderBottom: "none",

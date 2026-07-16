@@ -28,6 +28,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import addPriority from "../../api/resource-priorities/addPriority.ts";
 import updatePriority from "../../api/resource-priorities/updatePriority.ts";
 import deletePriority from "../../api/resource-priorities/deletePriority.ts";
+import ColorPicker from "../ColorPicker.tsx";
 
 export default function PriorityManager(): React.ReactElement {
     const [loading, setLoading] = React.useState<boolean>(true);
@@ -119,6 +120,7 @@ export default function PriorityManager(): React.ReactElement {
                         file_tags: {},
                         priority_id: "",
                         value: 0,
+                        indicator_color: null,
                     })
                 }
             />
@@ -127,6 +129,21 @@ export default function PriorityManager(): React.ReactElement {
                     (priority: ResourcePriority, index: number) => {
                         return (
                             <Paper elevation={16} sx={{ p: 2 }} key={index}>
+                                {priority.indicator_color !== null && (
+                                    <Box
+                                        sx={{
+                                            display: "inline-block",
+                                            width: 16,
+                                            height: 16,
+                                            borderRadius: "50%",
+                                            backgroundColor:
+                                                priority.indicator_color,
+                                            mr: 1,
+                                            mb: 1,
+                                            verticalAlign: "middle",
+                                        }}
+                                    />
+                                )}
                                 <Typography
                                     variant="h5"
                                     component="span"
@@ -220,6 +237,18 @@ export default function PriorityManager(): React.ReactElement {
                         autoComplete="off"
                         fullWidth
                     />
+                    <Typography sx={{ mt: 2 }}>Indicator color</Typography>
+                    <ColorPicker
+                        value={newPriority?.indicator_color ?? null}
+                        onChange={(color) => {
+                            if (newPriority !== null) {
+                                newPriority.indicator_color = color;
+                                setNewPriority(
+                                    JSON.parse(JSON.stringify(newPriority))
+                                );
+                            }
+                        }}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -292,6 +321,18 @@ export default function PriorityManager(): React.ReactElement {
                         label="Value"
                         autoComplete="off"
                         fullWidth
+                    />
+                    <Typography sx={{ mt: 2 }}>Indicator color</Typography>
+                    <ColorPicker
+                        value={editPriority?.indicator_color ?? null}
+                        onChange={(color) => {
+                            if (editPriority !== null) {
+                                editPriority.indicator_color = color;
+                                setEditPriority(
+                                    JSON.parse(JSON.stringify(editPriority))
+                                );
+                            }
+                        }}
                     />
                 </DialogContent>
                 <DialogActions>

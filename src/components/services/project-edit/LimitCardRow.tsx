@@ -2,12 +2,7 @@
 import React from "react";
 
 // MUI imports
-import {
-    Button,
-    InputAdornment,
-    TableCell,
-    TableRow,
-} from "@mui/material";
+import { Button, TableCell, TableRow } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
 // Icon imports
@@ -79,7 +74,8 @@ export default function LimitCardRow({
             </TableCell>
             <TableCell>
                 <DecimalTextField
-                    label=""
+                    sx={{ minWidth: "90px" }}
+                    label={limit?.display_unit}
                     value={
                         limit !== undefined
                             ? scaledValueToDecimalString(
@@ -89,15 +85,7 @@ export default function LimitCardRow({
                             : value.value.toString()
                     }
                     size="small"
-                    slotProps={{
-                        input: {
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    {limit?.display_unit}
-                                </InputAdornment>
-                            ),
-                        },
-                    }}
+                    slotProps={{}}
                     onValueChange={(newValue: string) => {
                         value.value =
                             limit === undefined
