@@ -10,6 +10,7 @@ import {
     CardContent,
     Theme,
     Typography,
+    useMediaQuery,
     useTheme,
 } from "@mui/material";
 
@@ -26,6 +27,7 @@ export default function PersonSearchResult({
     isSelected?: boolean;
 }): React.ReactElement {
     const theme: Theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const navigate = useNavigate();
 
     return (
@@ -53,10 +55,11 @@ export default function PersonSearchResult({
                 onClick={() => {
                     navigate("/PersonSearch/" + person._id);
                 }}
+                sx={{ minHeight: 80 }}
             >
                 <CardContent sx={{ p: 0 }}>
                     <Box sx={{ display: "flex" }}>
-                        <Box sx={{ py: 1, ml: 1 }}>
+                        <Box sx={{ py: 1.25, px: 1.5, minWidth: 0 }}>
                             <Typography
                                 sx={{ fontSize: 14 }}
                                 color="text.secondary"
@@ -68,7 +71,10 @@ export default function PersonSearchResult({
                                     person.username
                                 )}
                             </Typography>
-                            <Typography variant="h5" component="div">
+                            <Typography
+                                variant={isSmallScreen ? "h6" : "h5"}
+                                component="div"
+                            >
                                 {person.firstname} {person.lastname}
                             </Typography>
                         </Box>

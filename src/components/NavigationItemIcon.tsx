@@ -1960,9 +1960,7 @@ const iconMap: Record<string, () => Promise<{ default: React.ComponentType }>> =
         SignalWifiStatusbar4Bar: () =>
             import("@mui/icons-material/SignalWifiStatusbar4Bar"),
         SignalWifiStatusbarConnectedNoInternet4: () =>
-            import(
-                "@mui/icons-material/SignalWifiStatusbarConnectedNoInternet4"
-            ),
+            import("@mui/icons-material/SignalWifiStatusbarConnectedNoInternet4"),
         SignalWifiStatusbarNull: () =>
             import("@mui/icons-material/SignalWifiStatusbarNull"),
         Signpost: () => import("@mui/icons-material/Signpost"),

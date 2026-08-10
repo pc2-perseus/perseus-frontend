@@ -1445,8 +1445,7 @@ export default function ProjectEdit({
                                                                     originValue.resource_id ===
                                                                     editValue.resource_id
                                                                 ) {
-                                                                    flag2 =
-                                                                        true;
+                                                                    flag2 = true;
                                                                     const resChanges: string[] =
                                                                         [];
                                                                     if (
@@ -1528,8 +1527,7 @@ export default function ProjectEdit({
                                                                         resourceChanges +=
                                                                             ")";
                                                                     } else {
-                                                                        flag3 =
-                                                                            true;
+                                                                        flag3 = true;
                                                                     }
                                                                 }
                                                             }
@@ -1583,8 +1581,7 @@ export default function ProjectEdit({
                                                                     originValue.resource_id ===
                                                                     editValue.resource_id
                                                                 ) {
-                                                                    flag2 =
-                                                                        true;
+                                                                    flag2 = true;
                                                                     const resChanges: string[] =
                                                                         [];
                                                                     if (
@@ -1666,8 +1663,7 @@ export default function ProjectEdit({
                                                                         resourceChanges +=
                                                                             ")";
                                                                     } else {
-                                                                        flag3 =
-                                                                            true;
+                                                                        flag3 = true;
                                                                     }
                                                                 }
                                                             }

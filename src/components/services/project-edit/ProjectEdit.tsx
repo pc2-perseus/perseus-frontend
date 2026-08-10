@@ -3,6 +3,7 @@ import React from "react";
 
 // MUI imports
 import {
+    Box,
     Button,
     Card,
     CardContent,
@@ -14,6 +15,8 @@ import {
     Snackbar,
     TextField,
     Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -57,6 +60,8 @@ export default function ProjectEdit({
 }: {
     projectId?: string;
 }): React.ReactElement {
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const [project, setProject] = React.useState<Project | null>(null);
     const [resources, setResources] = React.useState<Resource[]>([]);
     const [clusters, setClusters] = React.useState<Cluster[]>([]);
@@ -203,10 +208,12 @@ export default function ProjectEdit({
         <>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                 <Grid container spacing={2} sx={{ mt: 1 }}>
-                    <Grid size={{ xs: 8, md: 5, lg: 4 }}>
-                        <Typography variant="h3">Edit project</Typography>
+                    <Grid size={{ xs: 12, md: 5, lg: 4 }}>
+                        <Typography variant={isSmallScreen ? "h4" : "h3"}>
+                            Edit project
+                        </Typography>
                     </Grid>
-                    <Grid size={{ xs: 4, md: 7, lg: 8 }}>
+                    <Grid size={{ xs: 12, md: 7, lg: 8 }}>
                         <MaterialUICopyField
                             config={{
                                 type: "copyitem",
@@ -568,23 +575,33 @@ export default function ProjectEdit({
                     </CardContent>
                 </Card>
 
-                <Button
-                    variant="contained"
-                    sx={{ my: 2, float: "right" }}
-                    onClick={openSaveDialog}
-                >
-                    Save changes
-                </Button>
-                <Button
-                    variant="contained"
-                    color="warning"
-                    sx={{ m: 2, float: "right" }}
-                    onClick={() => {
-                        window.location.reload();
+                <Box
+                    sx={{
+                        my: 2,
+                        display: "flex",
+                        flexDirection: { xs: "column-reverse", sm: "row" },
+                        justifyContent: "flex-end",
+                        gap: 2,
                     }}
                 >
-                    Reset changes
-                </Button>
+                    <Button
+                        variant="contained"
+                        color="warning"
+                        onClick={() => {
+                            window.location.reload();
+                        }}
+                        fullWidth={isSmallScreen}
+                    >
+                        Reset changes
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={openSaveDialog}
+                        fullWidth={isSmallScreen}
+                    >
+                        Save changes
+                    </Button>
+                </Box>
                 <Snackbar
                     open={showSnackbar}
                     autoHideDuration={3000}

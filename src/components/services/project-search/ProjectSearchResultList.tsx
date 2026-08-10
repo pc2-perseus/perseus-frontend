@@ -8,6 +8,7 @@ import { Box, Button, Divider } from "@mui/material";
 // Custom imports
 import Project from "../../../interfaces/Project.ts";
 import ProjectSearchResult from "./ProjectSearchResult.tsx";
+import isProjectArchived from "../../../utils/isProjectArchived.ts";
 
 export default function ProjectSearchResultList({
     searchResults,
@@ -27,10 +28,7 @@ export default function ProjectSearchResultList({
     const navigate = useNavigate();
 
     function isArchived(project: Project): boolean {
-        return (
-            project.state_machine.current_states.length === 1 &&
-            project.state_machine.current_states[0] === "Archive"
-        );
+        return isProjectArchived(project);
     }
 
     function isNotArchived(project: Project): boolean {

@@ -11,6 +11,7 @@ import {
     Chip,
     Theme,
     Typography,
+    useMediaQuery,
     useTheme,
 } from "@mui/material";
 
@@ -24,6 +25,7 @@ import ConfigContext from "../../../contexts/ConfigContext.ts";
 import FrontendConfiguration from "../../../interfaces/FrontendConfiguration.ts";
 import { stateTypeColor } from "../../../utils/stateTypeColor.ts";
 import { stateTypeName } from "../../../utils/stateTypeName.ts";
+import isProjectArchived from "../../../utils/isProjectArchived.ts";
 
 export default function ProjectSearchResult({
     project,
@@ -35,14 +37,13 @@ export default function ProjectSearchResult({
     isSelected?: boolean;
 }): React.ReactElement {
     const theme: Theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const navigate = useNavigate();
 
     const frontendConfig: FrontendConfiguration | null =
         React.useContext(ConfigContext);
 
-    const isArchived: boolean =
-        project.state_machine.current_states.length === 1 &&
-        project.state_machine.current_states[0] === "Archive";
+    const isArchived: boolean = isProjectArchived(project);
 
     const stateBackgroundColors: (string | undefined)[] = Array(
         project.state_machine.current_states.length
@@ -101,14 +102,24 @@ export default function ProjectSearchResult({
                 }}
             >
                 <CardContent sx={{ p: 0 }}>
-                    <Box sx={{ display: "flex" }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: isSmallScreen ? "column" : "row",
+                        }}
+                    >
                         <Box
                             sx={{
-                                writingMode: "vertical-lr",
-                                transform: "scale(-1, -1)",
+                                writingMode: isSmallScreen
+                                    ? "horizontal-tb"
+                                    : "vertical-lr",
+                                transform: isSmallScreen
+                                    ? "none"
+                                    : "scale(-1, -1)",
                                 textAlign: "center",
-                                fontSize: "19px",
+                                fontSize: isSmallScreen ? "0.8rem" : "19px",
                                 px: 1,
+                                py: isSmallScreen ? 0.5 : 1,
                                 background: projectTypeColor(
                                     project.project_type,
                                     frontendConfig
@@ -124,6 +135,7 @@ export default function ProjectSearchResult({
                                 py: 1,
                                 ml: 1,
                                 flexGrow: 2,
+                                minWidth: 0,
                             }}
                         >
                             <Typography
@@ -140,7 +152,10 @@ export default function ProjectSearchResult({
                                     </>
                                 )}
                             </Typography>
-                            <Typography variant="h5" component="div">
+                            <Typography
+                                variant={isSmallScreen ? "h6" : "h5"}
+                                component="div"
+                            >
                                 {project.abbreviation === null &&
                                 project.title === null
                                     ? "no title or abbreviation available"
@@ -152,10 +167,13 @@ export default function ProjectSearchResult({
                         </Box>
                         <Box
                             sx={{
-                                pt: "8px",
+                                pt: isSmallScreen ? 0 : "8px",
                                 pr: "6px",
+                                pb: isSmallScreen ? 1 : 0,
+                                pl: isSmallScreen ? 1 : 0,
                                 display: "flex",
-                                flexDirection: "column",
+                                flexDirection: isSmallScreen ? "row" : "column",
+                                flexWrap: "wrap",
                                 gap: "5px",
                             }}
                         >

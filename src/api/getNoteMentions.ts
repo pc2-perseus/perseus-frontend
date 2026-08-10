@@ -33,5 +33,7 @@ export default async function getNoteMentions(
         "/service/Notes/mention-user?username=" + encodeURIComponent(username)
     );
 
-    return call.statusCode === 200 ? normalizeMentionResponse(call.value) : null;
+    return call.statusCode === 200
+        ? normalizeMentionResponse(call.value)
+        : null;
 }

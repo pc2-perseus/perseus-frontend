@@ -24,6 +24,7 @@ export default function FilterBox({
     setFilters,
     applyFilters,
     onTransitionEnd,
+    isSmallScreen,
     disabled,
 }: {
     open: boolean;
@@ -35,6 +36,7 @@ export default function FilterBox({
     }) => void;
     applyFilters: () => void;
     onTransitionEnd: () => void;
+    isSmallScreen: boolean;
     disabled: boolean;
 }): React.ReactElement {
     const [searchFilters, setSearchFilters] = React.useState<SearchFilter[]>(
@@ -139,6 +141,7 @@ export default function FilterBox({
                             sx={{
                                 mt: 1.5,
                                 display: "flex",
+                                flexDirection: { xs: "column", sm: "row" },
                                 gap: "8px",
                                 justifyContent: "flex-end",
                             }}
@@ -157,6 +160,7 @@ export default function FilterBox({
                                             onClick={applyFilters}
                                             size="small"
                                             disabled={disabled}
+                                            fullWidth={isSmallScreen}
                                         >
                                             Apply
                                         </Button>
@@ -168,6 +172,7 @@ export default function FilterBox({
                                     onClick={applyFilters}
                                     size="small"
                                     disabled={disabled}
+                                    fullWidth={isSmallScreen}
                                 >
                                     Apply
                                 </Button>

@@ -39,6 +39,7 @@ import {
     Theme,
     Toolbar,
     Typography,
+    useMediaQuery,
     useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -114,6 +115,8 @@ export default function ProjectDetails({
 }: {
     projectId: string;
 }): React.ReactElement {
+    const theme: Theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const [project, setProject] = React.useState<Project | null>(null);
     const [clusters, setClusters] = React.useState<Cluster[]>([]);
     const [resources, setResources] = React.useState<Resource[]>([]);
@@ -343,7 +346,6 @@ export default function ProjectDetails({
         }
     }
 
-    const theme: Theme = useTheme();
     const navigate = useNavigate();
     const authContextData: AuthContextData | null =
         React.useContext(AuthContext);
@@ -519,7 +521,14 @@ export default function ProjectDetails({
 
     return (
         <>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    justifyContent: "space-between",
+                    gap: 2,
+                }}
+            >
                 <Box>
                     <Typography
                         sx={{ fontSize: 14 }}
@@ -535,7 +544,10 @@ export default function ProjectDetails({
                             </>
                         )}
                     </Typography>
-                    <Typography variant="h5" component="div">
+                    <Typography
+                        variant={isSmallScreen ? "h6" : "h5"}
+                        component="div"
+                    >
                         {project.abbreviation === null && project.title === null
                             ? "no title or abbreviation available"
                             : ""}
@@ -551,7 +563,7 @@ export default function ProjectDetails({
                         {project.abbreviation ? project.title : ""}
                     </Typography>
 
-                    <Box sx={{ mt: 1 }}>
+                    <Box sx={{ mt: 1, overflowX: "auto" }}>
                         <table>
                             <tbody>
                                 <tr>
@@ -765,9 +777,10 @@ export default function ProjectDetails({
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
+                        alignItems: { xs: "stretch", sm: "flex-end" },
                     }}
                 >
-                    <Box sx={{ textAlign: "right" }}>
+                    <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
                         <Chip
                             label={
                                 project.project_type === null
@@ -793,7 +806,14 @@ export default function ProjectDetails({
                             </IconButton>
                         </Box>
                     </Box>{" "}
-                    <Box sx={{ display: "flex", gap: 1 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: { xs: "column", sm: "row" },
+                            width: { xs: "100%", sm: "auto" },
+                            gap: 1,
+                        }}
+                    >
                         {showNoteActions ? (
                             <AddNote onSubmit={submitNewNote} />
                         ) : (
@@ -812,6 +832,7 @@ export default function ProjectDetails({
                                     aria-label="edit"
                                     sx={{ mt: 0 }}
                                     startIcon={<EditIcon />}
+                                    fullWidth={isSmallScreen}
                                 >
                                     Edit
                                 </Button>
@@ -824,14 +845,31 @@ export default function ProjectDetails({
             </Box>
             <Box sx={{ mt: 2 }}>
                 <Card variant="outlined">
-                    <TableContainer sx={{ maxHeight: "300px" }}>
-                        <Table sx={{ width: "100%" }} size="small" stickyHeader>
+                    <TableContainer
+                        sx={{ maxHeight: "300px", overflowX: "auto" }}
+                    >
+                        <Table
+                            sx={{
+                                width: "100%",
+                                minWidth: isSmallScreen ? 720 : 0,
+                            }}
+                            size="small"
+                            stickyHeader
+                        >
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Action</TableCell>
-                                    <TableCell>Comment</TableCell>
-                                    <TableCell>By</TableCell>
-                                    <TableCell>Time</TableCell>
+                                    <TableCell sx={{ minWidth: 120 }}>
+                                        Action
+                                    </TableCell>
+                                    <TableCell sx={{ minWidth: 260 }}>
+                                        Comment
+                                    </TableCell>
+                                    <TableCell sx={{ minWidth: 120 }}>
+                                        By
+                                    </TableCell>
+                                    <TableCell sx={{ minWidth: 220 }}>
+                                        Time
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -862,6 +900,7 @@ export default function ProjectDetails({
                                                 <TableCell
                                                     sx={{
                                                         ...borderStyle,
+                                                        minWidth: 120,
                                                     }}
                                                 >
                                                     {stateTypeName(
@@ -872,6 +911,8 @@ export default function ProjectDetails({
                                                 <TableCell
                                                     sx={{
                                                         ...borderStyle,
+                                                        minWidth: 260,
+                                                        verticalAlign: "top",
                                                         textarea: {
                                                             overflow: "hidden",
                                                         },
@@ -896,7 +937,8 @@ export default function ProjectDetails({
                                                 <TableCell
                                                     sx={{
                                                         ...borderStyle,
-                                                        width: "8em",
+                                                        minWidth: 120,
+                                                        verticalAlign: "top",
                                                     }}
                                                 >
                                                     {event.by}
@@ -904,7 +946,9 @@ export default function ProjectDetails({
                                                 <TableCell
                                                     sx={{
                                                         ...borderStyle,
-                                                        width: "20em",
+                                                        minWidth: 220,
+                                                        whiteSpace: "nowrap",
+                                                        verticalAlign: "top",
                                                     }}
                                                 >
                                                     {new Date(
@@ -1286,7 +1330,12 @@ export default function ProjectDetails({
                     <PublicationList publications={project.publications} />
                     <Button
                         variant="contained"
-                        sx={{ float: "right", mt: 3, mb: 2 }}
+                        sx={{
+                            mt: 3,
+                            mb: 2,
+                            ml: { xs: 0, sm: "auto" },
+                            display: "flex",
+                        }}
                         onClick={() => {
                             setDialogPublicationOpen(true);
                         }}
@@ -1315,8 +1364,7 @@ export default function ProjectDetails({
                                     value={newPublication.type}
                                     onChange={(e) => {
                                         newPublication.type = e.target.value as
-                                            | "bibtex"
-                                            | "doi";
+                                            "bibtex" | "doi";
                                         setNewPublication(
                                             JSON.parse(
                                                 JSON.stringify(newPublication)
@@ -1421,7 +1469,12 @@ export default function ProjectDetails({
                     </List>
                     <Button
                         variant="contained"
-                        sx={{ float: "right", mt: 3, mb: 2 }}
+                        sx={{
+                            mt: 3,
+                            mb: 2,
+                            ml: { xs: 0, sm: "auto" },
+                            display: "flex",
+                        }}
                         onClick={() => {
                             getFileTagSuggestions().then((result: string[]) => {
                                 setFileTagsSuggestions(result);
@@ -1590,8 +1643,7 @@ export default function ProjectDetails({
                                                         "additional_description"
                                                     ] as {
                                                         [key: string]:
-                                                            | string
-                                                            | number;
+                                                            string | number;
                                                     }
                                                 )[entryKey]
                                             }

@@ -35,5 +35,8 @@ export function scaledValueToRoundedDecimalString(
     factor: number,
     decimalPlaces: number
 ): string {
-    return new Decimal(value).div(factor).toDecimalPlaces(decimalPlaces).toString();
+    return new Decimal(value)
+        .div(factor)
+        .toDecimalPlaces(decimalPlaces)
+        .toString();
 }

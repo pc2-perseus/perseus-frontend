@@ -23,6 +23,8 @@ import {
     TableRow,
     TextField,
     Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 
 // Icon imports
@@ -60,6 +62,8 @@ export default function LimitCard({
     projectEnd: string | null;
     onChange: (values: LimitValue[]) => void;
 }): React.ReactElement {
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const [currentValues, setCurrentValues] = React.useState<LimitValue[]>(
         sortLimitValues(limitValues, limits)
     );
@@ -125,6 +129,8 @@ export default function LimitCard({
                     sx={{
                         width: "100%",
                         display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        gap: 1,
                         justifyContent: "space-between",
                     }}
                 >
@@ -132,16 +138,18 @@ export default function LimitCard({
                         {title}
                     </Typography>
                     <Button
+                        fullWidth={isSmallScreen}
                         onClick={() => {
                             setOpenDialog(true);
                         }}
                     >
+                        Add
                         <AddIcon />
                     </Button>
                 </Box>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
-                        <TableContainer>
+                        <TableContainer sx={{ overflowX: "auto" }}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
@@ -162,6 +170,7 @@ export default function LimitCard({
                                                 limits={limits}
                                                 onChange={updateLimitValue}
                                                 onDelete={deleteLimitValue}
+                                                isSmallScreen={isSmallScreen}
                                             />
                                         )
                                     )}

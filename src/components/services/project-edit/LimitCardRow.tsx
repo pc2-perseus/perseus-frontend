@@ -28,12 +28,14 @@ export default function LimitCardRow({
     limits,
     onChange,
     onDelete,
+    isSmallScreen,
 }: {
     value: LimitValue;
     index: number;
     limits: Limit[];
     onChange: (value: LimitValue, index: number) => void;
     onDelete: (index: number) => void;
+    isSmallScreen: boolean;
 }): React.ReactElement {
     const limit: Limit | undefined = limitMatch(value, limits);
 
@@ -101,8 +103,9 @@ export default function LimitCardRow({
             </TableCell>
             <TableCell>
                 <Button
-                    size="small"
+                    size={isSmallScreen ? "medium" : "small"}
                     color="error"
+                    fullWidth={isSmallScreen}
                     onClick={() => {
                         onDelete(index);
                     }}

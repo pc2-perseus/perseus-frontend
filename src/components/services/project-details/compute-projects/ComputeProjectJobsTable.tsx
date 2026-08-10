@@ -11,7 +11,9 @@ import ReorderIcon from "@mui/icons-material/Reorder";
 import StateIcon from "./StateIcon.tsx";
 import Job from "../../../../interfaces/Job.ts";
 import Cluster from "../../../../interfaces/Cluster.ts";
+import Project from "../../../../interfaces/Project.ts";
 import { JOB_STATES } from "../../../../interfaces/JobState.ts";
+import projectDisplayName from "../../../../utils/projectDisplayName.ts";
 import {
     formatJobId,
     getJobRowId,
@@ -25,9 +27,19 @@ function getClusterName(clusterId: string, clusters: Cluster[]): string {
     );
 }
 
+function getProjectName(projectOid: string, projects: Project[]): string {
+    const project: Project | undefined = projects.find(
+        (item) => item._id === projectOid
+    );
+    return project === undefined
+        ? projectOid
+        : projectDisplayName(project, projectOid);
+}
+
 export default function ComputeProjectJobsTable({
     jobs,
     clusters,
+    projects,
     loading,
     paginationModel,
     hasNextPage,
@@ -41,6 +53,7 @@ export default function ComputeProjectJobsTable({
 }: {
     jobs: Job[];
     clusters: Cluster[];
+    projects?: Project[];
     loading: boolean;
     paginationModel: GridPaginationModel;
     hasNextPage: boolean;
@@ -138,6 +151,18 @@ export default function ComputeProjectJobsTable({
                 return formatJobId(params.row, jobIdFormat);
             },
         },
+        ...(projects !== undefined
+            ? [
+                  {
+                      field: "project_oid",
+                      headerName: "Project",
+                      flex: 1,
+                      minWidth: 140,
+                      valueGetter: (_value, row) =>
+                          getProjectName(row.project_oid, projects),
+                  } as GridColDef<Job>,
+              ]
+            : []),
         {
             field: "cluster_id",
             headerName: "Cluster",
@@ -179,10 +204,17 @@ export default function ComputeProjectJobsTable({
             paginationMeta={{
                 hasNextPage,
             }}
+
             paginationModel={paginationModel}
             initialState={{
                 sorting: {
                     sortModel: [{ field: "job_id", sort: "asc" }],
+                },
+            }}
+            slotProps={{
+                loadingOverlay: {
+                    variant: "skeleton",
+                    noRowsVariant: "skeleton",
                 },
             }}
             pageSizeOptions={[10, 25]}

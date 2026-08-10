@@ -39,6 +39,7 @@ import ConfigContext from "./contexts/ConfigContext.ts";
 
 export default function App() {
     const systemPrefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+    const isMobile = useMediaQuery("(max-width:899.95px)");
     const [showDialog, setShowDialog] = React.useState<boolean | null>(null);
 
     const [isDarkMode, updateDarkMode] = React.useState<boolean>(
@@ -46,6 +47,8 @@ export default function App() {
     );
     const [isDrawerCollapsedState, updateDrawerCollapsedState] =
         React.useState<boolean>(isDrawerCollapsed());
+    const [isMobileDrawerOpen, setMobileDrawerOpen] =
+        React.useState<boolean>(false);
 
     // Activate dark mode if explicitly set (1) or if set to "system" (2) and system prefers dark
     const theme = React.useMemo(
@@ -102,6 +105,14 @@ export default function App() {
     function updateDrawerCollapsed(collapsed: boolean): void {
         updateDrawerCollapsedState(collapsed);
         setDrawerCollapsed(collapsed);
+    }
+
+    function toggleNavigationDrawer(): void {
+        if (isMobile) {
+            setMobileDrawerOpen((previousState) => !previousState);
+            return;
+        }
+        updateDrawerCollapsed(!isDrawerCollapsedState);
     }
 
     function logout() {
@@ -178,9 +189,8 @@ export default function App() {
                                 isDarkMode={isDarkMode}
                                 updateDarkMode={updateDarkModeNavbar}
                                 isDrawerCollapsed={isDrawerCollapsedState}
-                                updateDrawerCollapsed={
-                                    updateDrawerCollapsed
-                                }
+                                onToggleNavigation={toggleNavigationDrawer}
+                                showNavigationToggle={authContextData !== null}
                             />
 
                             {authContextData === null && isLoading !== null ? (
@@ -229,14 +239,19 @@ export default function App() {
                                     <DrawerNavigation
                                         items={navigationItems}
                                         isCollapsed={isDrawerCollapsedState}
+                                        isMobile={isMobile}
+                                        mobileOpen={isMobileDrawerOpen}
+                                        onMobileClose={() =>
+                                            setMobileDrawerOpen(false)
+                                        }
                                     />
                                     <Box
                                         component="main"
                                         sx={{
                                             flexGrow: 1,
                                             minWidth: 0,
-                                            pl: 3,
-                                            pr: 2,
+                                            pl: { xs: 2, sm: 3 },
+                                            pr: { xs: 2, sm: 3, md: 2 },
                                             pt: "64px",
                                             pb: 2,
                                             overflowX: "hidden",

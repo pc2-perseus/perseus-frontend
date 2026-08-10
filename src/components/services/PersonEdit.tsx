@@ -1,5 +1,6 @@
 // React imports
 import React, { ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 // MUI imports
 import {
@@ -35,6 +36,7 @@ export default function PersonEdit({
 }: {
     personId?: string;
 }): React.ReactElement {
+    const navigate = useNavigate();
     const [fields, setFields] = React.useState<ProjectEditField[] | null>(null);
     const [selectables, setSelectables] = React.useState<
         ProjectEditSelectable[] | null
@@ -334,7 +336,25 @@ export default function PersonEdit({
                     );
                 })}
 
-                <Box sx={{ float: "right", mt: 3 }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
+                        flexWrap: "nowrap",
+                        gap: 0.5,
+                        mt: 3,
+                    }}
+                >
+                    <Button
+                        variant="outlined"
+                        sx={{ mr: 2 }}
+                        onClick={() => {
+                            navigate("/PersonSearch/" + personId);
+                        }}
+                    >
+                        back
+                    </Button>
                     <Button
                         variant="contained"
                         color="warning"
@@ -501,7 +521,7 @@ export default function PersonEdit({
                     if (responseAlert === false) {
                         setResponseAlert(null);
                     } else {
-                        window.location.href = `${import.meta.env.BASE_URL}PersonSearch/${personId}`;
+                        navigate("/PersonSearch/" + personId);
                     }
                 }}
             >

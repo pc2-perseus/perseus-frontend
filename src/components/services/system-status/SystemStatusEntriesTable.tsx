@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    Box,
     Button,
     Paper,
     Table,
@@ -25,18 +26,26 @@ export default function SystemStatusEntriesTable({
 }): React.ReactElement {
     return (
         <Paper elevation={16} sx={{ p: 2 }}>
-            <Typography variant="h5" component="span" gutterBottom>
-                Entries
-            </Typography>
-            <Button
-                variant="contained"
-                sx={{ float: "right" }}
-                startIcon={<AddIcon />}
-                onClick={onAdd}
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    justifyContent: "space-between",
+                    gap: 1,
+                }}
             >
-                Add entry
-            </Button>
-            <TableContainer sx={{ mt: 2 }}>
+                <Typography variant="h5" component="span" gutterBottom>
+                    Entries
+                </Typography>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={onAdd}
+                >
+                    Add entry
+                </Button>
+            </Box>
+            <TableContainer sx={{ mt: 2, overflowX: "auto" }}>
                 <Table size="small">
                     <TableHead>
                         <TableRow>

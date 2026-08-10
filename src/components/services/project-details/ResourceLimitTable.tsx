@@ -402,8 +402,14 @@ function PhaseRow({
                     sx={{ p: 0, borderBottom: isLast ? "none" : undefined }}
                 >
                     <Collapse in={showPhase}>
-                        <TableContainer sx={{ width: "100%" }}>
-                            <Table size="small">
+                        <TableContainer
+                            sx={{
+                                width: "100%",
+                                overflowX: "auto",
+                                WebkitOverflowScrolling: "touch",
+                            }}
+                        >
+                            <Table sx={{ minWidth: 640 }} size="small">
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Resource / Limit</TableCell>
@@ -555,6 +561,9 @@ export default function ResourceLimitTable({
             }
         }
     );
+    const sortedPhases = _.sortBy(_.keys(phases), (phase: string) =>
+        Number(phase.split("-")[0])
+    );
 
     React.useEffect(() => {
         checkServicePermission("GrantedResourceChanges").then(
@@ -566,7 +575,12 @@ export default function ResourceLimitTable({
 
     return (
         <Card variant="outlined" sx={{ my: 2 }}>
-            <TableContainer>
+            <TableContainer
+                sx={{
+                    overflowX: "auto",
+                    WebkitOverflowScrolling: "touch",
+                }}
+            >
                 <Table sx={{ width: "100%" }} size="small">
                     <TableBody>
                         <TableRow>
@@ -599,7 +613,7 @@ export default function ResourceLimitTable({
                             </TableCell>
                         </TableRow>
 
-                        {_.keys(phases).map((phase: string, index: number) => {
+                        {sortedPhases.map((phase: string, index: number) => {
                             return (
                                 <PhaseRow
                                     phase={phase}
@@ -616,8 +630,8 @@ export default function ResourceLimitTable({
                                     clusters={clusters}
                                     resources={resources}
                                     limits={limits}
-                                    isLast={index + 1 >= _.keys(phases).length}
-                                    key={index}
+                                    isLast={index + 1 >= sortedPhases.length}
+                                    key={phase}
                                 />
                             );
                         })}

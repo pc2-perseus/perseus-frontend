@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Box, Button, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Grid, Stack, Typography } from "@mui/material";
 import Cluster from "../../interfaces/Cluster.ts";
 import Resource from "../../interfaces/Resource.ts";
 import SystemStatusEntry from "../../interfaces/SystemStatusEntry.ts";
@@ -205,7 +205,8 @@ export default function SystemStatusManager(): React.ReactElement {
         cluster,
         services: services.filter(
             (service: SystemStatusService) =>
-                service.domain === "cluster" && service.cluster_id === cluster.id
+                service.domain === "cluster" &&
+                service.cluster_id === cluster.id
         ),
     }));
 
@@ -264,43 +265,20 @@ export default function SystemStatusManager(): React.ReactElement {
                     <Typography variant="h5" sx={{ mb: 2 }}>
                         Services
                     </Typography>
-                    <Stack spacing={2}>
-                        <SystemStatusServiceSection
-                            title="Central Services"
-                            services={centralServices}
-                            onAdd={() => {
-                                setPageMessage(null);
-                                setServiceDialogError("");
-                                setServiceDialogContext({
-                                    service: createEmptySystemStatusService(
-                                        "central_services"
-                                    ),
-                                    sectionTitle: "Central Services",
-                                });
-                            }}
-                            onSelect={(service: SystemStatusService) => {
-                                setPageMessage(null);
-                                setServiceDialogError("");
-                                setServiceDialogContext({
-                                    service: structuredClone(service),
-                                    sectionTitle: "Central Services",
-                                });
-                            }}
-                        />
-                        {clusterSections.map(({ cluster, services }) => (
+                    <Grid spacing={2} container>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <SystemStatusServiceSection
-                                key={cluster.id}
-                                title={cluster.name}
-                                services={services}
+                                title="Central Services"
+                                services={centralServices}
                                 onAdd={() => {
                                     setPageMessage(null);
                                     setServiceDialogError("");
                                     setServiceDialogContext({
-                                        service: createEmptySystemStatusService(
-                                            "cluster",
-                                            cluster.id
-                                        ),
-                                        sectionTitle: cluster.name,
+                                        service:
+                                            createEmptySystemStatusService(
+                                                "central_services"
+                                            ),
+                                        sectionTitle: "Central Services",
                                     });
                                 }}
                                 onSelect={(service: SystemStatusService) => {
@@ -308,15 +286,45 @@ export default function SystemStatusManager(): React.ReactElement {
                                     setServiceDialogError("");
                                     setServiceDialogContext({
                                         service: structuredClone(service),
-                                        sectionTitle: getClusterName(
-                                            service.cluster_id,
-                                            clusters
-                                        ),
+                                        sectionTitle: "Central Services",
                                     });
                                 }}
                             />
+                        </Grid>
+                        {clusterSections.map(({ cluster, services }) => (
+                            <Grid key={cluster.id} size={{ xs: 12, md: 6 }}>
+                                <SystemStatusServiceSection
+                                    title={cluster.name}
+                                    services={services}
+                                    onAdd={() => {
+                                        setPageMessage(null);
+                                        setServiceDialogError("");
+                                        setServiceDialogContext({
+                                            service:
+                                                createEmptySystemStatusService(
+                                                    "cluster",
+                                                    cluster.id
+                                                ),
+                                            sectionTitle: cluster.name,
+                                        });
+                                    }}
+                                    onSelect={(
+                                        service: SystemStatusService
+                                    ) => {
+                                        setPageMessage(null);
+                                        setServiceDialogError("");
+                                        setServiceDialogContext({
+                                            service: structuredClone(service),
+                                            sectionTitle: getClusterName(
+                                                service.cluster_id,
+                                                clusters
+                                            ),
+                                        });
+                                    }}
+                                />
+                            </Grid>
                         ))}
-                    </Stack>
+                    </Grid>
                 </Box>
             </Stack>
             <SystemStatusEntryDialog

@@ -425,10 +425,8 @@ export default function SessionManager(): React.ReactElement {
                                                                     },
                                                                 }}
                                                                 InputProps={{
-                                                                    readOnly:
-                                                                        true,
-                                                                    disableUnderline:
-                                                                        true,
+                                                                    readOnly: true,
+                                                                    disableUnderline: true,
                                                                     style: {
                                                                         fontSize:
                                                                             "0.875rem",

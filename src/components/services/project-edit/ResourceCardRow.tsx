@@ -41,6 +41,7 @@ export default function ResourceCardRow({
     priorities,
     onChange,
     onDelete,
+    isSmallScreen,
 }: {
     value: ResourceValue;
     index: number;
@@ -49,6 +50,7 @@ export default function ResourceCardRow({
     priorities: ResourcePriority[];
     onChange: (value: ResourceValue, index: number) => void;
     onDelete: (index: number) => void;
+    isSmallScreen: boolean;
 }): React.ReactElement {
     const resource: Resource | undefined = resourceMatch(value, resources);
     const cluster: Cluster | undefined = clusterMatch(
@@ -171,8 +173,9 @@ export default function ResourceCardRow({
             </TableCell>
             <TableCell>
                 <Button
-                    size="small"
+                    size={isSmallScreen ? "medium" : "small"}
                     color="error"
+                    fullWidth={isSmallScreen}
                     onClick={() => {
                         onDelete(index);
                     }}

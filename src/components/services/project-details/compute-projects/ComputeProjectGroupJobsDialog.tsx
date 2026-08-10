@@ -94,7 +94,14 @@ export default function ComputeProjectGroupJobsDialog({
                 fullWidth
             >
                 <DialogTitle>Job Group {groupId ?? ""}</DialogTitle>
-                <DialogContent dividers sx={{ height: 520 }}>
+                <DialogContent
+                    dividers
+                    sx={{
+                        height: 520,
+                        px: { xs: 1, sm: 3 },
+                        overflowX: "auto",
+                    }}
+                >
                     <ComputeProjectJobsTable
                         jobs={jobs ?? []}
                         clusters={clusters}

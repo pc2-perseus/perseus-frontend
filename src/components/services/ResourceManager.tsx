@@ -268,9 +268,7 @@ export default function ResourceManager(): React.ReactElement {
                                             onClick={() =>
                                                 setResourceEdit(
                                                     JSON.parse(
-                                                        JSON.stringify(
-                                                            resource
-                                                        )
+                                                        JSON.stringify(resource)
                                                     )
                                                 )
                                             }

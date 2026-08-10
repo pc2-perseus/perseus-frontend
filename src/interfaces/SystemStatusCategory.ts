@@ -3,6 +3,7 @@ enum SystemStatusCategory {
     INFO = "info",
     WARNING = "warning",
     ERROR = "error",
+    MAINTENANCE = "maintenance",
 }
 
 export default SystemStatusCategory;

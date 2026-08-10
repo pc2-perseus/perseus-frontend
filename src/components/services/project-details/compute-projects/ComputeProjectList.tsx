@@ -321,8 +321,7 @@ export default function ComputeProjectList({
                                       workingComputeProject.compute_project_id
                                   ] as unknown as {
                                       [key: string]: (
-                                          | ResourceValue
-                                          | LimitValue
+                                          ResourceValue | LimitValue
                                       )[];
                                   })
                         }

@@ -115,6 +115,10 @@ export default function ComputeProjectCard({
             }
         );
     });
+    const sortedPhases = _.sortBy(
+        _.keys(grantedElementsGrouped[computeProjectId] ?? {}),
+        (phase: string) => Number(phase.split("-")[0])
+    );
 
     function phaseUsageInformation(
         computeProjectId: string,
@@ -240,9 +244,10 @@ export default function ComputeProjectCard({
                     sx={{
                         position: "relative",
                         maxHeight: "600px",
-                        overflowX: "hidden",
+                        overflowX: "auto",
                         overflowY: "scroll",
                         scrollbarWidth: "none",
+                        WebkitOverflowScrolling: "touch",
                     }}
                 >
                     <Table
@@ -316,70 +321,68 @@ export default function ComputeProjectCard({
                                 </TableRow>
                             )}
 
-                            {_.keys(
-                                grantedElementsGrouped[computeProjectId]
-                            ).map((phase: string, index: number) => {
-                                const data: (ResourceValue | LimitValue)[] = (
-                                    grantedElementsGrouped[
-                                        computeProjectId
-                                    ] as unknown as {
-                                        [key: string]: (
-                                            | ResourceValue
-                                            | LimitValue
-                                        )[];
-                                    }
-                                )[phase];
+                            {sortedPhases.map(
+                                (phase: string, index: number) => {
+                                    const data: (ResourceValue | LimitValue)[] =
+                                        (
+                                            grantedElementsGrouped[
+                                                computeProjectId
+                                            ] as unknown as {
+                                                [key: string]: (
+                                                    ResourceValue | LimitValue
+                                                )[];
+                                            }
+                                        )[phase];
 
-                                return (
-                                    <ComputeProjectPhaseRow
-                                        phase={phase}
-                                        grantedResources={
-                                            data.filter(
-                                                (item) => "resource_id" in item
-                                            ) as ResourceValue[]
-                                        }
-                                        usedResources={phaseUsageInformation(
-                                            computeProjectId,
-                                            phase
-                                        )}
-                                        grantedLimits={
-                                            data.filter(
-                                                (item) => "limit_id" in item
-                                            ) as LimitValue[]
-                                        }
-                                        clusters={clusters}
-                                        resources={resources}
-                                        limits={limits}
-                                        priorities={priorities}
-                                        isLast={
-                                            index + 1 >=
-                                            _.keys(
-                                                grantedElementsGrouped[
-                                                    computeProjectId
-                                                ]
-                                            ).length
-                                        }
-                                        onResourceBlock={onResourceBlock}
-                                        onResourceUnblock={onResourceUnblock}
-                                        onResourceOverwriteAdd={
-                                            onResourceOverwriteAdd
-                                        }
-                                        onResourceOverwriteEdit={
-                                            onResourceOverwriteEdit
-                                        }
-                                        onLimitOverwriteAdd={
-                                            onLimitOverwriteAdd
-                                        }
-                                        onLimitOverwriteEdit={
-                                            onLimitOverwriteEdit
-                                        }
-                                        showOverrideActions={
-                                            showOverrideActions
-                                        }
-                                        key={index}
-                                    />
-                                );
-                            })}
+                                    return (
+                                        <ComputeProjectPhaseRow
+                                            phase={phase}
+                                            grantedResources={
+                                                data.filter(
+                                                    (item) =>
+                                                        "resource_id" in item
+                                                ) as ResourceValue[]
+                                            }
+                                            usedResources={phaseUsageInformation(
+                                                computeProjectId,
+                                                phase
+                                            )}
+                                            grantedLimits={
+                                                data.filter(
+                                                    (item) => "limit_id" in item
+                                                ) as LimitValue[]
+                                            }
+                                            clusters={clusters}
+                                            resources={resources}
+                                            limits={limits}
+                                            priorities={priorities}
+                                            isLast={
+                                                index + 1 >= sortedPhases.length
+                                            }
+                                            onResourceBlock={onResourceBlock}
+                                            onResourceUnblock={
+                                                onResourceUnblock
+                                            }
+                                            onResourceOverwriteAdd={
+                                                onResourceOverwriteAdd
+                                            }
+                                            onResourceOverwriteEdit={
+                                                onResourceOverwriteEdit
+                                            }
+                                            onLimitOverwriteAdd={
+                                                onLimitOverwriteAdd
+                                            }
+                                            onLimitOverwriteEdit={
+                                                onLimitOverwriteEdit
+                                            }
+                                            showOverrideActions={
+                                                showOverrideActions
+                                            }
+                                            key={phase}
+                                        />
+                                    );
+                                }
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>

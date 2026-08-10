@@ -53,9 +53,7 @@ export default function ComputeProjectPhaseRow({
     phase: string;
     grantedResources: ResourceValue[];
     usedResources:
-        | { resourceId: string; value: number; max: number }[]
-        | null
-        | undefined;
+        { resourceId: string; value: number; max: number }[] | null | undefined;
     grantedLimits: LimitValue[];
     isLast: boolean;
     clusters: Cluster[];
@@ -249,8 +247,14 @@ export default function ComputeProjectPhaseRow({
                     sx={{ p: 0, borderBottom: isLast ? "none" : undefined }}
                 >
                     <Collapse in={showPhase}>
-                        <TableContainer sx={{ width: "100%" }}>
-                            <Table size="small">
+                        <TableContainer
+                            sx={{
+                                width: "100%",
+                                overflowX: "auto",
+                                WebkitOverflowScrolling: "touch",
+                            }}
+                        >
+                            <Table sx={{ minWidth: 720 }} size="small">
                                 <TableHead>
                                     <TableRow>
                                         <TableCell />

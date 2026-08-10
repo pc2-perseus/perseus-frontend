@@ -44,12 +44,14 @@ export default function Navbar({
     isDarkMode,
     updateDarkMode,
     isDrawerCollapsed,
-    updateDrawerCollapsed,
+    onToggleNavigation,
+    showNavigationToggle,
 }: {
     isDarkMode: boolean;
     updateDarkMode: (isDarkMode: boolean) => void;
     isDrawerCollapsed: boolean;
-    updateDrawerCollapsed: (isDrawerCollapsed: boolean) => void;
+    onToggleNavigation: () => void;
+    showNavigationToggle: boolean;
 }): React.ReactElement {
     const [version, updateVersion] = React.useState<null | string>("");
 
@@ -88,23 +90,40 @@ export default function Navbar({
             >
                 <AppBar position="fixed" enableColorOnDark>
                     <Toolbar>
-                        {authContextData !== null ? (
+                        {showNavigationToggle ? (
                             <IconButton
                                 sx={{
                                     color: "#fff",
                                     ml: { md: "-12px" },
                                     mr: 1,
-                                    display: { xs: "none", md: "inline-flex" },
                                 }}
-                                onClick={() =>
-                                    updateDrawerCollapsed(!isDrawerCollapsed)
-                                }
+                                onClick={onToggleNavigation}
+                                aria-label="Toggle navigation menu"
                             >
-                                {isDrawerCollapsed ? (
+                                <Box
+                                    sx={{
+                                        display: {
+                                            xs: "inline-flex",
+                                            md: "none",
+                                        },
+                                    }}
+                                >
                                     <MenuIcon />
-                                ) : (
-                                    <MenuOpenIcon />
-                                )}
+                                </Box>
+                                <Box
+                                    sx={{
+                                        display: {
+                                            xs: "none",
+                                            md: "inline-flex",
+                                        },
+                                    }}
+                                >
+                                    {isDrawerCollapsed ? (
+                                        <MenuIcon />
+                                    ) : (
+                                        <MenuOpenIcon />
+                                    )}
+                                </Box>
                             </IconButton>
                         ) : (
                             ""

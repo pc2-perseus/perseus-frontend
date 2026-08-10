@@ -37,15 +37,39 @@ export default function ComputeProjectRightBar({
     return (
         <Box
             sx={{
-                width: contentId !== null ? "650px" : "2.75em",
+                width:
+                    contentId !== null
+                        ? {
+                              xs: "calc(100vw - 5rem)",
+                              sm: "calc(100vw - 6rem)",
+                              md: "650px",
+                          }
+                        : "2.75em",
                 height: contentId === "jobs" ? "600px" : undefined,
                 minHeight:
                     contentId === null ? "9.6em" : contentMinHeight[contentId],
                 maxHeight: "100%",
-                flexBasis: contentId !== null ? "650px" : "2.75em",
+                maxWidth:
+                    contentId !== null
+                        ? {
+                              xs: "calc(100vw - 5rem)",
+                              sm: "calc(100vw - 6rem)",
+                              md: "650px",
+                          }
+                        : "2.75em",
+                flexBasis:
+                    contentId !== null
+                        ? {
+                              xs: "calc(100vw - 5rem)",
+                              sm: "calc(100vw - 6rem)",
+                              md: "650px",
+                          }
+                        : "2.75em",
                 flexShrink: 0,
                 overflowY: contentId === "jobs" ? "hidden" : "scroll",
+                overflowX: "hidden",
                 scrollbarWidth: "none",
+                minWidth: 0,
                 borderLeftWidth: "1px",
                 borderLeftStyle: "solid",
                 borderLeftColor: theme.palette.divider,

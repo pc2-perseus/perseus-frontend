@@ -11,6 +11,7 @@ import {
     InputAdornment,
     TextField,
     Theme,
+    useMediaQuery,
     useTheme,
 } from "@mui/material";
 
@@ -49,6 +50,7 @@ export default function ProjectSearch({
 
     const location = useLocation();
     const theme: Theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     function search(event: ChangeEvent<HTMLInputElement>) {
         setSearchString(event.currentTarget.value);
@@ -156,6 +158,7 @@ export default function ProjectSearch({
             <Box
                 sx={{
                     display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
                     gap: "5px",
                 }}
             >
@@ -171,7 +174,12 @@ export default function ProjectSearch({
                     variant="outlined"
                     onChange={search}
                     value={searchString}
-                    sx={{ flexGrow: 1 }}
+                    sx={{
+                        flexGrow: 1,
+                        "& .MuiInputBase-root": {
+                            minHeight: 56,
+                        },
+                    }}
                 />
                 <Box sx={{ position: "relative" }}>
                     <Badge
@@ -190,6 +198,8 @@ export default function ProjectSearch({
                                 }
                             }}
                             sx={{
+                                width: isSmallScreen ? "100%" : undefined,
+                                minHeight: 56,
                                 borderColor:
                                     theme.palette.mode === "light"
                                         ? "rgba(0, 0, 0, 0.23)"
@@ -290,6 +300,7 @@ export default function ProjectSearch({
                 onTransitionEnd={() => {
                     setShowHelper(showFilters);
                 }}
+                isSmallScreen={isSmallScreen}
                 disabled={
                     (searchString.length === 0 &&
                         _.keys(filterItems).length === 0) ||

@@ -23,6 +23,8 @@ import {
     TableRow,
     TextField,
     Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
@@ -67,6 +69,8 @@ export default function ResourceCard({
     projectEnd: string | null;
     onChange: (values: ResourceValue[]) => void;
 }): React.ReactElement {
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const [currentValues, setCurrentValues] = React.useState<ResourceValue[]>(
         sortResourceValues(resourceValues, resources, clusters)
     );
@@ -150,6 +154,8 @@ export default function ResourceCard({
                     sx={{
                         width: "100%",
                         display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        gap: 1,
                         justifyContent: "space-between",
                     }}
                 >
@@ -157,16 +163,18 @@ export default function ResourceCard({
                         {title}
                     </Typography>
                     <Button
+                        fullWidth={isSmallScreen}
                         onClick={() => {
                             setOpenDialog(true);
                         }}
                     >
+                        Add
                         <AddIcon />
                     </Button>
                 </Box>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
-                        <TableContainer>
+                        <TableContainer sx={{ overflowX: "auto" }}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
@@ -193,6 +201,7 @@ export default function ResourceCard({
                                                 priorities={priorities}
                                                 onChange={updateResourceValue}
                                                 onDelete={deleteResourceValue}
+                                                isSmallScreen={isSmallScreen}
                                             />
                                         )
                                     )}

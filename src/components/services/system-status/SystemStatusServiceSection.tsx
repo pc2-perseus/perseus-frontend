@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    Box,
     Button,
     List,
     ListItemButton,
@@ -23,17 +24,21 @@ export default function SystemStatusServiceSection({
 }): React.ReactElement {
     return (
         <Paper elevation={16} sx={{ p: 2 }}>
-            <Typography variant="h5" component="span" gutterBottom>
-                {title}
-            </Typography>
-            <Button
-                variant="contained"
-                size="small"
-                sx={{ float: "right" }}
-                onClick={onAdd}
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    justifyContent: "space-between",
+                    gap: 1,
+                }}
             >
-                <AddIcon />
-            </Button>
+                <Typography variant="h5" component="span" gutterBottom>
+                    {title}
+                </Typography>
+                <Button variant="contained" size="small" onClick={onAdd}>
+                    <AddIcon />
+                </Button>
+            </Box>
             <List sx={{ mt: 2, py: 0 }}>
                 {services.length === 0 ? (
                     <ListItemText

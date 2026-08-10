@@ -41,9 +41,15 @@ export interface NavigationItem {
 export default function DrawerNavigation({
     items,
     isCollapsed,
+    isMobile,
+    mobileOpen,
+    onMobileClose,
 }: {
     items: NavigationItem[];
     isCollapsed: boolean;
+    isMobile: boolean;
+    mobileOpen: boolean;
+    onMobileClose: () => void;
 }): React.ReactElement {
     const location = useLocation();
 
@@ -130,8 +136,13 @@ export default function DrawerNavigation({
         <ListItemButton
             component={NavLink}
             to="/dashboard"
+            onClick={() => {
+                if (isMobile) {
+                    onMobileClose();
+                }
+            }}
             sx={{
-                minHeight: 48,
+                minHeight: 52,
                 px: 2.5,
                 justifyContent: isCollapsed ? "center" : "initial",
                 backgroundColor:
@@ -171,8 +182,13 @@ export default function DrawerNavigation({
             <ListItemButton
                 component={NavLink}
                 to={"/" + item.id}
+                onClick={() => {
+                    if (isMobile) {
+                        onMobileClose();
+                    }
+                }}
                 sx={{
-                    minHeight: 48,
+                    minHeight: 52,
                     px: 2.5,
                     justifyContent: isCollapsed ? "center" : "initial",
                     backgroundColor: location.pathname.startsWith("/" + item.id)
@@ -227,6 +243,57 @@ export default function DrawerNavigation({
         );
     }
 
+    const navigationList = (
+        <List
+            sx={{
+                mt: "49px",
+            }}
+        >
+            <ListItem sx={{ ml: 0, mr: 0, px: 0, pb: "2px", pt: 1 }}>
+                {isCollapsed && !isMobile ? (
+                    <Tooltip title="Dashboard" placement="right">
+                        {dashboardItemContent}
+                    </Tooltip>
+                ) : (
+                    dashboardItemContent
+                )}
+            </ListItem>
+            {generalItems.map(renderItem)}
+            {stateItems.length == 0 ? (
+                ""
+            ) : isCollapsed && !isMobile ? (
+                stateItems.map(renderItem)
+            ) : (
+                <>
+                    <ListSubheader sx={{ lineHeight: "24px", pt: 1 }}>
+                        States
+                    </ListSubheader>
+                    {stateItems.map(renderItem)}
+                </>
+            )}
+            {serviceItems.length == 0 ? (
+                ""
+            ) : isCollapsed && !isMobile ? (
+                [
+                    stateItems.length > 0 ? (
+                        <Divider key="collapsed-services-divider" />
+                    ) : (
+                        ""
+                    ),
+                    ...serviceItems.map(renderItem),
+                ]
+            ) : (
+                <>
+                    {stateItems.length > 0 ? <Divider /> : ""}
+                    <ListSubheader sx={{ lineHeight: "24px", pt: 1 }}>
+                        Services
+                    </ListSubheader>
+                    {serviceItems.map(renderItem)}
+                </>
+            )}
+        </List>
+    );
+
     return (
         <Box
             component="nav"
@@ -248,6 +315,22 @@ export default function DrawerNavigation({
             }}
         >
             <Drawer
+                variant="temporary"
+                open={mobileOpen}
+                onClose={onMobileClose}
+                ModalProps={{ keepMounted: true }}
+                sx={{
+                    display: { xs: "block", md: "none" },
+                    "& .MuiDrawer-paper": {
+                        boxSizing: "border-box",
+                        overflowX: "hidden",
+                        width: expandedDrawerWidth,
+                    },
+                }}
+            >
+                {navigationList}
+            </Drawer>
+            <Drawer
                 variant="permanent"
                 sx={{
                     display: { xs: "none", md: "block" },
@@ -261,54 +344,7 @@ export default function DrawerNavigation({
                     },
                 }}
             >
-                <List
-                    sx={{
-                        mt: "49px",
-                    }}
-                >
-                    <ListItem sx={{ ml: 0, mr: 0, px: 0, pb: "2px", pt: 1 }}>
-                        {isCollapsed ? (
-                            <Tooltip title="Dashboard" placement="right">
-                                {dashboardItemContent}
-                            </Tooltip>
-                        ) : (
-                            dashboardItemContent
-                        )}
-                    </ListItem>
-                    {generalItems.map(renderItem)}
-                    {stateItems.length == 0 ? (
-                        ""
-                    ) : isCollapsed ? (
-                        stateItems.map(renderItem)
-                    ) : (
-                        <>
-                            <ListSubheader sx={{ lineHeight: "24px", pt: 1 }}>
-                                States
-                            </ListSubheader>
-                            {stateItems.map(renderItem)}
-                        </>
-                    )}
-                    {serviceItems.length == 0 ? (
-                        ""
-                    ) : isCollapsed ? (
-                        [
-                            stateItems.length > 0 ? (
-                                <Divider key="collapsed-services-divider" />
-                            ) : (
-                                ""
-                            ),
-                            ...serviceItems.map(renderItem),
-                        ]
-                    ) : (
-                        <>
-                            {stateItems.length > 0 ? <Divider /> : ""}
-                            <ListSubheader sx={{ lineHeight: "24px", pt: 1 }}>
-                                Services
-                            </ListSubheader>
-                            {serviceItems.map(renderItem)}
-                        </>
-                    )}
-                </List>
+                {navigationList}
             </Drawer>
         </Box>
     );

@@ -18,9 +18,11 @@ export default function AffiliationSelector({
     onChange: (value: Institute | null) => void;
 }): React.ReactElement {
     function getAffiliationLabel(ins: Institute): string {
-        return `${organizations.find(
-            (organization) => organization._id === ins.organization_id
-        )?.name ?? ""}, ${ins.name}`;
+        return `${
+            organizations.find(
+                (organization) => organization._id === ins.organization_id
+            )?.name ?? ""
+        }, ${ins.name}`;
     }
 
     const [currentValue, setCurrentValue] = React.useState<

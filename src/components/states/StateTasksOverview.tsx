@@ -11,6 +11,7 @@ import {
     List,
     Paper,
     Theme,
+    useMediaQuery,
     useTheme,
 } from "@mui/material";
 
@@ -62,6 +63,7 @@ export default function StateTasksOverview({
     const location = useLocation();
     const navigate = useNavigate();
     const theme: Theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     function handleClick(task: Task) {
         if (task.assignee === null) {
@@ -113,22 +115,30 @@ export default function StateTasksOverview({
         return (
             <Paper
                 elevation={16}
-                sx={{ p: 0, my: 1, display: "flex" }}
+                sx={{
+                    p: 0,
+                    my: 1,
+                    display: "flex",
+                    flexDirection: isSmallScreen ? "column" : "row",
+                }}
                 key={index}
             >
                 <Box
                     sx={{
-                        writingMode: "vertical-lr",
-                        transform: "scale(-1, -1)",
+                        writingMode: isSmallScreen
+                            ? "horizontal-tb"
+                            : "vertical-lr",
+                        transform: isSmallScreen ? "none" : "scale(-1, -1)",
                         textAlign: "center",
-                        fontSize: "19px",
+                        fontSize: isSmallScreen ? "0.8rem" : "19px",
                         px: 1,
+                        py: isSmallScreen ? 0.5 : 1,
                         background: projectTypeColor(
                             task.project_type,
                             frontendConfig
                         ),
-                        borderTopRightRadius: "4px",
-                        borderBottomRightRadius: "4px",
+                        borderTopRightRadius: isSmallScreen ? 0 : "4px",
+                        borderBottomRightRadius: isSmallScreen ? 0 : "4px",
                     }}
                 >
                     {task.project_type === null ? "unknown" : task.project_type}

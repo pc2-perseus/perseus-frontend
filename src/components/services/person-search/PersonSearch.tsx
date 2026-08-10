@@ -74,6 +74,11 @@ export default function PersonSearch({
                 onChange={search}
                 fullWidth
                 value={searchString}
+                sx={{
+                    "& .MuiInputBase-root": {
+                        minHeight: 56,
+                    },
+                }}
             />
             <Box
                 sx={{

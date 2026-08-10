@@ -3,8 +3,8 @@ import { TextField, TextFieldProps } from "@mui/material";
 
 function cleanInput(value: string): string {
     let normalized = value.replace(",", "."); //Convert comma to dot
-    normalized = normalized.replace(/[^\d.]/g, "");  // Remove anything that isn't a digit or a dot
-    const parts = normalized.split(".");  // Prevent multiple dots
+    normalized = normalized.replace(/[^\d.]/g, ""); // Remove anything that isn't a digit or a dot
+    const parts = normalized.split("."); // Prevent multiple dots
     if (parts.length > 2) {
         normalized = parts[0] + "." + parts.slice(1).join("");
     }
@@ -46,7 +46,7 @@ export default function DecimalTextField({
         const sanitized = cleanInput(rawValue);
 
         setDisplayValue(sanitized);
-        // Only notify the parent if it's a valid "final" number 
+        // Only notify the parent if it's a valid "final" number
         if (sanitized !== "" && sanitized !== ".") {
             onValueChange(sanitized);
         } else if (sanitized === "") {

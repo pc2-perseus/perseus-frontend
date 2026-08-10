@@ -8,11 +8,13 @@ import {
     Button,
     Card,
     CardContent,
+    Chip,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     Theme,
+    Tooltip,
     Typography,
     useTheme,
 } from "@mui/material";
@@ -25,6 +27,8 @@ import HttpIcon from "@mui/icons-material/Http";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import LanguageIcon from "@mui/icons-material/Language";
 import EditIcon from "@mui/icons-material/Edit";
+import FingerprintIcon from "@mui/icons-material/Fingerprint";
+import OrcidLogo from "../../../assets/orcid.svg";
 
 // Custom imports
 import Person from "../../../interfaces/Person.ts";
@@ -205,6 +209,7 @@ export default function PersonDetailsBox({
                                         color: theme.palette.primary.main,
                                     }}
                                     target="_blank"
+                                    rel="noreferrer"
                                 >
                                     Go to website
                                 </a>
@@ -249,7 +254,10 @@ export default function PersonDetailsBox({
                                         }
                                     );
                                     return (
-                                        <Box key={entry.affiliationId}>
+                                        <Box
+                                            key={entry.affiliationId}
+                                            sx={{ wordBreak: "break-word" }}
+                                        >
                                             {name} ({entry.start.getFullYear()}{" "}
                                             - {entry.end.getFullYear()})
                                         </Box>
@@ -264,6 +272,69 @@ export default function PersonDetailsBox({
                         </ListItemIcon>
                         <ListItemText>
                             {person.nationalities.join(", ")}
+                        </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemIcon>
+                            <img
+                                src={OrcidLogo}
+                                alt="ORCID"
+                                style={{ width: 24, height: 24 }}
+                            />
+                        </ListItemIcon>
+                        <ListItemText>
+                            {person.orcid === null ? (
+                                <i>N/A</i>
+                            ) : (
+                                <a
+                                    href={"https://orcid.org/" + person.orcid}
+                                    style={{
+                                        textDecoration: "none",
+                                        color: theme.palette.primary.main,
+                                    }}
+                                    target="_blank"
+                                >
+                                    {person.orcid}
+                                </a>
+                            )}
+                        </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemIcon>
+                            <FingerprintIcon />
+                        </ListItemIcon>
+                        <ListItemText>
+                            {person.identities.length === 0 ? (
+                                <i>None</i>
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                        gap: 0.5,
+                                    }}
+                                >
+                                    {person.identities.map((identity) => (
+                                        <Tooltip
+                                            key={identity.provider}
+                                            title={
+                                                identity.external_id +
+                                                (identity.linked_at === null
+                                                    ? ""
+                                                    : " — linked " +
+                                                      new Date(
+                                                          identity.linked_at
+                                                      ).toUTCString())
+                                            }
+                                        >
+                                            <Chip
+                                                label={identity.provider}
+                                                size="small"
+                                            />
+                                        </Tooltip>
+                                    ))}
+                                </Box>
+                            )}
                         </ListItemText>
                     </ListItem>
                 </List>

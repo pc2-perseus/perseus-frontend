@@ -9,6 +9,7 @@ export const SYSTEM_STATUS_CATEGORY_ORDER: SystemStatusCategory[] = [
     SystemStatusCategory.WARNING,
     SystemStatusCategory.INFO,
     SystemStatusCategory.RUNNING,
+    SystemStatusCategory.MAINTENANCE
 ];
 
 export function createEmptySystemStatusEntry(): SystemStatusEntry {
